@@ -42,10 +42,47 @@
     </dependencies>
   </dependencyManagement>
 
-  <modules>
-    <module>qpid-amqp-0.10-jms</module>
-    <module>qpid-jms</module>
-  </modules>
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>qpid-amqp-0.10-jms</module>
+        <module>qpid-jms</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>swiftmq</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>repo-local</id>
+          <url>file://${user.dir}/repo-local</url>
+        </repository>
+      </repositories>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>com.swiftmq</groupId>
+            <artifactId>amqp</artifactId>
+            <version>1.0</version>
+          </dependency>
+          <dependency>
+            <groupId>com</groupId>
+            <artifactId>swiftmq</artifactId>
+            <version>1.0</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <modules>
+        <module>swiftmq</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <build>
     <pluginManagement>

@@ -71,7 +71,7 @@ public class BroadcastReceiver
         }
         catch (IOException | UnsupportedProtocolVersionException | AuthenticationException | AMQPException | InterruptedException ex)
         {
-            LOGGER.info("Failed to connect and create consumer or producer!, {}", ex);
+            LOGGER.info("Failed to connect and create consumer or producer!", ex);
             System.exit(1);
         }
         finally

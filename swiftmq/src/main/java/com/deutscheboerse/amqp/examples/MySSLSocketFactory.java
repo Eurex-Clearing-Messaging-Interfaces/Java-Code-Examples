@@ -22,11 +22,13 @@ public class MySSLSocketFactory extends JSSESocketFactory
         this.alias = alias;
     }
 
+    @Override
     public Socket createSocket(InetAddress addr, int port) throws UnknownHostException, IOException
     {
         return initializeSSLContext().getSocketFactory().createSocket(addr, port);
     }
 
+    @Override
     public Socket createSocket(String host, int port) throws UnknownHostException, IOException
     {
         return initializeSSLContext().getSocketFactory().createSocket(host, port);

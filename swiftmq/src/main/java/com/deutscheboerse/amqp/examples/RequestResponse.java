@@ -110,7 +110,7 @@ public class RequestResponse
         }
         catch (Exception ex)
         {
-            LOGGER.error("Failed to connect and create consumer or producer!, {}", ex);
+            LOGGER.error("Failed to connect and create consumer or producer!", ex);
             System.exit(1);
         }
         finally

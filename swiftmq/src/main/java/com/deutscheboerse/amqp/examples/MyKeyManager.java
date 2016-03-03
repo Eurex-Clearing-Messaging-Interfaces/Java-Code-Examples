@@ -41,31 +41,37 @@ public class MyKeyManager extends X509ExtendedKeyManager
         return originalKeyManager.chooseServerAlias(keyType, issuers, socket);
     }
 
+    @Override
     public X509Certificate[] getCertificateChain(String alias)
     {
         return originalKeyManager.getCertificateChain(alias);
     }
 
+    @Override
     public String[] getClientAliases(String keyType, Principal[] issuers)
     {
         return new String[]{alias};
     }
 
+    @Override
     public PrivateKey getPrivateKey(String alias)
     {
         return originalKeyManager.getPrivateKey(alias);
     }
 
+    @Override
     public String[] getServerAliases(String keyType, Principal[] issuers)
     {
         return originalKeyManager.getServerAliases(keyType, issuers);
     }
 
+    @Override
     public String chooseEngineClientAlias(String[] keyType, Principal[] issuers, SSLEngine engine)
     {
         return alias;
     }
 
+    @Override
     public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine engine)
     {
         return originalKeyManager.chooseEngineServerAlias(keyType, issuers, engine);

@@ -65,14 +65,14 @@ public class Listener implements MessageListener, ExceptionListener
         }
         catch (JMSException ex)
         {
-            LOGGER.error("Failed to process incomming message {}", ex);
+            LOGGER.error("Failed to process incomming message", ex);
         }
     }
 
     @Override
     public void onException(JMSException ex)
     {
-        LOGGER.error("Exception: {} caught from connection object. Reconnect needed. Exiting ... ", ex);
+        LOGGER.error("Exception caught from connection object. Reconnect needed. Exiting ... ", ex);
         System.exit(0);
     }
     

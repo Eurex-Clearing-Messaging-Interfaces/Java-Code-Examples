@@ -96,7 +96,7 @@ public class RequestResponse
         }
         catch (NamingException | JMSException | IOException e)
         {
-            LOGGER.error("Unable to proceed with request responder {}", e);
+            LOGGER.error("Unable to proceed with request responder", e);
         }
         finally
         {

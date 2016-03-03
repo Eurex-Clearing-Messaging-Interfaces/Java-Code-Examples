@@ -69,15 +69,15 @@ public class BroadcastReceiver
         }
         catch (FileNotFoundException e)
         {
-            LOGGER.error("Unable to read configuration from file {}", e);
+            LOGGER.error("Unable to read configuration from file", e);
         }
         catch (IOException e)
         {
-            LOGGER.error("Unable to read configuration from file {}", e);
+            LOGGER.error("Unable to read configuration from file", e);
         }
         catch (JMSException | NamingException | InterruptedException e)
         {
-            LOGGER.error("Unable to proceed with broadcast receiver {}", e);
+            LOGGER.error("Unable to proceed with broadcast receiver", e);
         }
         finally
         {

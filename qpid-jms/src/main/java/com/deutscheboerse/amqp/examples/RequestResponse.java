@@ -104,15 +104,15 @@ public class RequestResponse
         }
         catch (FileNotFoundException e)
         {
-            LOGGER.error("Unable to read configuration from file {}", e);
+            LOGGER.error("Unable to read configuration from file", e);
         }
         catch (IOException e)
         {
-            LOGGER.error("Unable to read configuration from file {}", e);
+            LOGGER.error("Unable to read configuration from file", e);
         }
         catch (NamingException | JMSException e)
         {
-            LOGGER.error("Unable to proceed with request responder {}", e);
+            LOGGER.error("Unable to proceed with request responder", e);
         }
         finally
         {

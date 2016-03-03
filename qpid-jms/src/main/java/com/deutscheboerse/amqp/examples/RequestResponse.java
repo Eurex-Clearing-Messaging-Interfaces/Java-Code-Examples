@@ -20,7 +20,11 @@ public class RequestResponse
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
 
-    public static void main(String[] args) throws JMSException
+    public RequestResponse(String[] args)
+    {
+    }
+    
+    public void run() throws JMSException
     {
         //System.setProperty("javax.net.debug", "ssl");
 
@@ -141,6 +145,12 @@ public class RequestResponse
                 connection.close();
             }
         }
+    }
+    
+    public static void main(String[] args) throws JMSException
+    {
+        RequestResponse requestResponse = new RequestResponse(args);
+        requestResponse.run();
     }
 }
 

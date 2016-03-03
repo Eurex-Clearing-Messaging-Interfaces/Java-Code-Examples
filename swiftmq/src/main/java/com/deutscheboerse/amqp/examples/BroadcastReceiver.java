@@ -19,8 +19,12 @@ public class BroadcastReceiver
 {
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
+
+    public BroadcastReceiver(String[] args)
+    {
+    }
     
-    public static void main(String[] args) throws AMQPException
+    public void run() throws AMQPException
     {
         System.setProperty("javax.net.ssl.trustStore", "truststore");
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");
@@ -94,5 +98,11 @@ public class BroadcastReceiver
                 connection.close();
             }
         }
+    }
+
+    public static void main(String[] args) throws AMQPException
+    {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(args);
+        broadcastReceiver.run();
     }
 }

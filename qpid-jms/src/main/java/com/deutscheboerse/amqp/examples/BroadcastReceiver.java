@@ -19,7 +19,11 @@ public class BroadcastReceiver
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
 
-    public static void main(String[] args) throws JMSException
+    public BroadcastReceiver(String[] args)
+    {
+    }
+    
+    public void run() throws JMSException
     {
         //System.setProperty("javax.net.debug", "ssl");
 
@@ -103,5 +107,11 @@ public class BroadcastReceiver
                 connection.close();
             }
         }
+    }
+    
+    public static void main(String[] args) throws JMSException
+    {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(args);
+        broadcastReceiver.run();
     }
 }

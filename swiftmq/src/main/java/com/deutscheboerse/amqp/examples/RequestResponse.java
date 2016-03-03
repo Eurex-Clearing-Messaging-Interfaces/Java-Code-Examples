@@ -4,14 +4,17 @@ import java.util.UUID;
 
 import com.swiftmq.amqp.AMQPContext;
 import com.swiftmq.amqp.v100.client.AMQPException;
+import com.swiftmq.amqp.v100.client.AuthenticationException;
 import com.swiftmq.amqp.v100.client.Connection;
 import com.swiftmq.amqp.v100.client.Consumer;
 import com.swiftmq.amqp.v100.client.Producer;
 import com.swiftmq.amqp.v100.client.QoS;
 import com.swiftmq.amqp.v100.client.Session;
+import com.swiftmq.amqp.v100.client.UnsupportedProtocolVersionException;
 import com.swiftmq.amqp.v100.generated.messaging.message_format.*;
 import com.swiftmq.amqp.v100.messaging.AMQPMessage;
 import com.swiftmq.amqp.v100.types.AMQPString;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +27,11 @@ public class RequestResponse
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
 
-    /**
-     * @param args
-     *            the command line arguments
-     * @throws AMQPException 
-     */
-    public static void main(String[] args) throws AMQPException
+    public RequestResponse(String[] args)
+    {
+    }
+    
+    public void run() throws AMQPException
     {
         System.setProperty("javax.net.ssl.trustStore", "truststore");
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");
@@ -108,7 +110,7 @@ public class RequestResponse
                 LOGGER.error("Reply wasn't received for {} seconds", TIMEOUT_MILLIS/1000);
             }
         }
-        catch (Exception ex)
+        catch (IOException | UnsupportedProtocolVersionException | AuthenticationException | AMQPException ex)
         {
             LOGGER.error("Failed to connect and create consumer or producer!", ex);
             System.exit(1);
@@ -138,5 +140,11 @@ public class RequestResponse
                 connection.close();
             }
         }
+    }
+    
+    public static void main(String[] args) throws AMQPException
+    {
+        RequestResponse requestResponse = new RequestResponse(args);
+        requestResponse.run();
     }
 }

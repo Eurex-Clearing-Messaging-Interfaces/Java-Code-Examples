@@ -19,7 +19,11 @@ public class RequestResponse
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
 
-    public static void main(String[] args) throws JMSException
+    public RequestResponse(String[] args)
+    {
+    }
+
+    public void run() throws JMSException
     {
         /*
          * Step 1: Initializing the context based on the properties file we prepared
@@ -125,6 +129,12 @@ public class RequestResponse
                 connection.close();
             }
         }
+    }
+    
+    public static void main(String[] args) throws JMSException
+    {
+        RequestResponse requestResponse = new RequestResponse(args);
+        requestResponse.run();
     }
 }
 

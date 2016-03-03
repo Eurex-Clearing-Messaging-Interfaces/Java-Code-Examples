@@ -24,7 +24,11 @@ public class BroadcastReceiver
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
 
-    public static void main(String[] args) throws JMSException
+    public BroadcastReceiver(String[] args)
+    {
+    }
+    
+    public void run() throws JMSException
     {
         /*
          * Step 1: Initializing the context based on the properties file we prepared
@@ -101,5 +105,11 @@ public class BroadcastReceiver
                 connection.close();
             }
         }
+    }
+    
+    public static void main(String[] args) throws JMSException
+    {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(args);
+        broadcastReceiver.run();
     }
 }

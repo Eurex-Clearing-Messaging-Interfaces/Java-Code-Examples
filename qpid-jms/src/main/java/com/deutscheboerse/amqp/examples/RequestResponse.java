@@ -4,10 +4,9 @@ import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
+import javax.naming.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,74 +18,99 @@ public class RequestResponse
 {
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
-
-    public RequestResponse(String[] args)
-    {
-    }
     
-    public void run() throws JMSException
+    private InitialContext context;
+    
+    public RequestResponse(Options options)
     {
         //System.setProperty("javax.net.debug", "ssl");
-
+        
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss Z");
         System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
+        
+        try
+        {
+            Properties properties = new Properties();
+            properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+            properties.setProperty("connectionfactory.connection", String.format(
+                    "amqps://%s:%d?transport.keyStoreLocation=%s&transport.keyStorePassword=%s&transport.trustStoreLocation=%s&transport.trustStorePassword=%s&transport.keyAlias=%s&amqp.idleTimeout=0",
+                    options.getHostname(),
+                    options.getPort(),
+                    options.getKeystoreFileName(),
+                    options.getKeystorePassword(),
+                    options.getTruststoreFileName(),
+                    options.getTruststorePassword(),
+                    options.getCertificateAlias()));
+            properties.setProperty("queue.broadcastAddress", String.format(
+                    "broadcast.%s.TradeConfirmation",
+                    options.getAccountName()));
+            properties.setProperty("topic.requestAddress", String.format("request.%s", options.getAccountName()));
+            properties.setProperty("queue.responseAddress", String.format("response.%s", options.getAccountName()));
+            properties.setProperty("topic.replyAddress", String.format("response/response.%s", options.getAccountName()));
 
+            this.context = new InitialContext(properties);
+        }
+        catch (NamingException ex)
+        {
+            LOGGER.error("Unable to proceed with broadcast receiver", ex);
+        }
+    }
+    
+    public void run() throws JMSException
+    {
         /*
-         * Step 1: Initializing the context based on the properties file we prepared
-         */
-        Properties properties = new Properties();
+        * Step 1: Initializing the context based on the properties file we prepared
+        */
         Listener listener = new Listener();
         Connection connection = null;
         Session session = null;
         MessageProducer requestProducer = null;
         MessageConsumer responseConsumer = null;
-
+        
         try
         {
-            properties.load(RequestResponse.class.getResourceAsStream("examples.properties"));
-            InitialContext ctx= new InitialContext(properties);
             /*
-             * Step 2: Preparing the connection and session
-             */
-            ConnectionFactory fact = (ConnectionFactory) ctx.lookup("connection");
+            * Step 2: Preparing the connection and session
+            */
+            ConnectionFactory fact = (ConnectionFactory) context.lookup("connection");
             connection = fact.createConnection();
             connection.setExceptionListener(listener);
             session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-
+            
             /*
-             * Step 3: Creating a producer and consumer
-             */
-            Destination requestDestination = (Destination) ctx.lookup("requestAddress");
+            * Step 3: Creating a producer and consumer
+            */
+            Destination requestDestination = (Destination) context.lookup("requestAddress");
             requestProducer = session.createProducer(requestDestination);
-            Destination responseDest = (Destination) ctx.lookup("responseAddress");
+            Destination responseDest = (Destination) context.lookup("responseAddress");
             responseConsumer = session.createConsumer(responseDest);
-
+            
             /*
-             * Step 4: Starting the connection
-             */
+            * Step 4: Starting the connection
+            */
             connection.start();
             LOGGER.info("Connected");
-
+            
             /*
-             * Step 5: Sending a request
-             */
+            * Step 5: Sending a request
+            */
             TextMessage message = session.createTextMessage("<FIXML>...</FIXML>");
             message.setJMSCorrelationID(UUID.randomUUID().toString());
-            message.setJMSReplyTo((Destination) ctx.lookup("replyAddress"));
-
+            message.setJMSReplyTo((Destination) context.lookup("replyAddress"));
+            
             requestProducer.send(message);
-
+            
             LOGGER.info("REQUEST SENT:");
             LOGGER.info("#############");
             LOGGER.info("Correlation ID: {}", message.getJMSCorrelationID());
             LOGGER.info("Message Text  {}: ", message.getText());
             LOGGER.info("#############");
-
+            
             /*
-             * Step 6: Receive response
-             */
+            * Step 6: Receive response
+            */
             LOGGER.info("Waiting {} seconds for reply", TIMEOUT_MILLIS/1000);
             Message receivedMsg = responseConsumer.receive(TIMEOUT_MILLIS);
             if (receivedMsg != null)
@@ -95,7 +119,7 @@ public class RequestResponse
                 LOGGER.info("#################");
                 if (receivedMsg instanceof TextMessage)
                 {
-                    LOGGER.info("messageText = {}", ((TextMessage) receivedMsg).getText());   
+                    LOGGER.info("messageText = {}", ((TextMessage) receivedMsg).getText());
                 }
                 LOGGER.info("Correlation ID {}", receivedMsg.getJMSCorrelationID());
                 LOGGER.info("#################");
@@ -106,14 +130,6 @@ public class RequestResponse
                 LOGGER.error("Reply wasn't received for {} seonds", TIMEOUT_MILLIS/1000);
             }
         }
-        catch (FileNotFoundException e)
-        {
-            LOGGER.error("Unable to read configuration from file", e);
-        }
-        catch (IOException e)
-        {
-            LOGGER.error("Unable to read configuration from file", e);
-        }
         catch (NamingException | JMSException e)
         {
             LOGGER.error("Unable to proceed with request responder", e);
@@ -121,8 +137,8 @@ public class RequestResponse
         finally
         {
             /*
-             * Step 7: Closing the connection
-             */
+            * Step 7: Closing the connection
+            */
             if (requestProducer != null)
             {
                 LOGGER.info("Closing producer");
@@ -140,7 +156,7 @@ public class RequestResponse
             }
             if (connection != null)
             {
-                // implicitly closes session and producers/consumers 
+                // implicitly closes session and producers/consumers
                 LOGGER.info("Closing connection");
                 connection.close();
             }
@@ -149,7 +165,17 @@ public class RequestResponse
     
     public static void main(String[] args) throws JMSException
     {
-        RequestResponse requestResponse = new RequestResponse(args);
+        Options options = new Options.OptionsBuilder()
+                .accountName("ABCFR_ABCFRALMMACC1")
+                .hostname("ecag-fixml-simu1.deutsche-boerse.com")
+                .port(10170)
+                .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
+                .keystorePassword("123456")
+                .truststoreFilename("truststore")
+                .truststorePassword("123456")
+                .certificateAlias("abcfr_abcfralmmacc1")
+                .build();
+        RequestResponse requestResponse = new RequestResponse(options);
         requestResponse.run();
     }
 }

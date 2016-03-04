@@ -19,22 +19,24 @@ public class BroadcastReceiver
 {
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
-
-    public BroadcastReceiver(String[] args)
-    {
-    }
     
-    public void run() throws AMQPException
+    private final Options options;
+
+    public BroadcastReceiver(Options options)
     {
-        System.setProperty("javax.net.ssl.trustStore", "truststore");
-        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-        System.setProperty("javax.net.ssl.keyStore", "ABCFR_ABCFRALMMACC1.keystore");
-        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.trustStore", options.getTruststoreFileName());
+        System.setProperty("javax.net.ssl.trustStorePassword", options.getTruststorePassword());
+        System.setProperty("javax.net.ssl.keyStore", options.getKeystoreFileName());
+        System.setProperty("javax.net.ssl.keyStorePassword", options.getKeystorePassword());
 
         //System.setProperty("javax.net.debug", "ssl");
         //System.setProperty("swiftmq.amqp.debug", "true");
         //System.setProperty("swiftmq.amqp.frame.debug", "true");
-
+        this.options = options;
+    }
+    
+    public void run() throws AMQPException
+    {
         /*
          * Step 1: Initializing the variables
          */
@@ -49,9 +51,10 @@ public class BroadcastReceiver
              */
             LOGGER.info("Creating connection");
             AMQPContext ctx = new AMQPContext(AMQPContext.CLIENT);
-            connection = new Connection(ctx, "ecag-fixml-simu1.deutsche-boerse.de", 10170, "", "");
+            connection = new Connection(ctx, options.getHostname(), options.getPort(), "", "");
+            connection.setIdleTimeout(120000);
             connection.setMechanism("EXTERNAL");
-            connection.setSocketFactory(new MySSLSocketFactory("abcfr_abcfralmmacc1"));
+            connection.setSocketFactory(new MySSLSocketFactory(options.getCertificateAlias()));
             
             /*
              * Step 3: Starting the connection
@@ -63,7 +66,8 @@ public class BroadcastReceiver
              * Step 4: Creating a producer and consumer
              */
             session = connection.createSession(1000, 1000);
-            responseConsumer = session.createConsumer("broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation", 1000, QoS.AT_LEAST_ONCE, true, null);
+            responseConsumer = session.createConsumer(String.format("broadcast.%s.TradeConfirmation", options.getAccountName()),
+                    1000, QoS.AT_LEAST_ONCE, true, null);
         
             /*
              * Step 5: Receiving broadcast messages using listener for timeout seconds
@@ -102,7 +106,17 @@ public class BroadcastReceiver
 
     public static void main(String[] args) throws AMQPException
     {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(args);
+        Options options = new Options.OptionsBuilder()
+                .accountName("ABCFR_ABCFRALMMACC1")
+                .hostname("ecag-fixml-simu1.deutsche-boerse.com")
+                .port(10170)
+                .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
+                .keystorePassword("123456")
+                .truststoreFilename("truststore")
+                .truststorePassword("123456")
+                .certificateAlias("abcfr_abcfralmmacc1")
+                .build();
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(options);
         broadcastReceiver.run();
     }
 }

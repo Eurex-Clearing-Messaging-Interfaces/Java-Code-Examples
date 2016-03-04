@@ -20,22 +20,20 @@
 
  $ _mvn -Pswiftmq clean package dependency:copy-dependencies_
 
-## Configuration (all modules except swiftmq)
- * Edit _example.properties_ in client module to suit your needs, file is located in directory: _\<module\>/target/classes/com/deutscheboerse/amqp/examples_, where \<module\> should be replaced by one of:
-     * qpid-amqp-0.10-jms
-     * qpid-jms
- * Change connection string and queue names according to the documentation.
- * Configure certificates to maintain secure connection to broker
-  * Set passwords to trust store and key store in connection string in file _example.properties_ (default password is '123456')
-  * Set full path to trust store and key store in connection string in file _example.properties_ (default values 'truststore.jks' and 'ABCFR_ABCFRALMMACC1.keystore' will **NOT work**)
+## Configuration (all modules)
+ * Edit _BroadcastReceiver.java_ and/or _RequestResponse.java_ in modules you want to compile and change connection options as described in the
+documentation:
 
-## Configuration (module swiftmq)
- * Edit creating of connection and consumer/producer to suit your needs in files _BroadcastReceiver.java_ and _RequestResponse.java._
-     * How to change connection string and queue names is described in documentation.
- * Configure certificates to maintain secure connection to broker
-     * Set passwords to trust store and key store in _BroadcastReceiver.java_, _RequestResponse.java_ files (default password is '123456')
-     * Set full path to trust store and key store in _BroadcastReceiver.java_, _RequestResponse.java_ files (default values 'truststore' and 'ABCFR_ABCFRALMMACC1.keystore' will **NOT work**)
- * Proceed with compilation
+             Options options = new Options.OptionsBuilder()
+                .accountName("ABCFR_ABCFRALMMACC1")
+                .hostname("ecag-fixml-simu1.deutsche-boerse.com")
+                .port(10170)
+                .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
+                .keystorePassword("123456")
+                .truststoreFilename("truststore")
+                .truststorePassword("123456")
+                .certificateAlias("abcfr_abcfralmmacc1")
+                .build();
 
 ## Execution (all modules)
 

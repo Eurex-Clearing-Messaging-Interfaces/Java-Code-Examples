@@ -18,7 +18,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Broadcast Receiver Receives broadcasts from the persistent broadcast queue
  */
@@ -26,74 +25,79 @@ public class RequestResponse
 {
     private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
+    
+    private final Options options;
 
-    public RequestResponse(String[] args)
+    public RequestResponse(Options options)
     {
+        System.setProperty("javax.net.ssl.trustStore", options.getTruststoreFileName());
+        System.setProperty("javax.net.ssl.trustStorePassword", options.getTruststorePassword());
+        System.setProperty("javax.net.ssl.keyStore", options.getKeystoreFileName());
+        System.setProperty("javax.net.ssl.keyStorePassword", options.getKeystorePassword());
+
+//        System.setProperty("javax.net.debug", "ssl");
+//        System.setProperty("swiftmq.amqp.debug", "true");
+//        System.setProperty("swiftmq.amqp.frame.debug", "true");
+        this.options = options;
     }
     
     public void run() throws AMQPException
     {
-        System.setProperty("javax.net.ssl.trustStore", "truststore");
-        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-        System.setProperty("javax.net.ssl.keyStore", "ABCFR_ABCFRALMMACC1.keystore");
-        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
-
-        //System.setProperty("javax.net.debug", "ssl");
-        //System.setProperty("swiftmq.amqp.debug", "true");
-        //System.setProperty("swiftmq.amqp.frame.debug", "true");
-
         /*
-         * Step 1: Initializing the variables
-         */
+        * Step 1: Initializing the variables
+        */
         Connection connection = null;
         Session session = null;
         Producer requestProducer = null;
         Consumer responseConsumer = null;
-
+        
         try
         {
             /*
-             * Step 2: Preparing the connection and session
-             */
+            * Step 2: Preparing the connection and session
+            */
             LOGGER.info("Creating connection");
             AMQPContext ctx = new AMQPContext(AMQPContext.CLIENT);
-            connection = new Connection(ctx, "ecag-fixml-simu1.deutsche-boerse.de", 10170, "", "");
+            connection = new Connection(ctx, options.getHostname(), options.getPort(), "", "");
+            connection.setIdleTimeout(120000);
             connection.setMechanism("EXTERNAL");
-            connection.setSocketFactory(new MySSLSocketFactory("abcfr_abcfralmmacc1"));
+            connection.setSocketFactory(new MySSLSocketFactory(options.getCertificateAlias()));
             
             /*
-             * Step 3: Starting the connection
-             */
+            * Step 3: Starting the connection
+            */
             connection.connect();
             LOGGER.info("Connected");
-
-            /*
-             * Step 4: Creating a producer and consumer
-             */
-            session = connection.createSession(1000, 1000);
-            requestProducer = session.createProducer("request.ABCFR_ABCFRALMMACC1", QoS.AT_LEAST_ONCE);
-            responseConsumer = session.createConsumer("response.ABCFR_ABCFRALMMACC1", 1000, QoS.AT_LEAST_ONCE, true, null);
             
             /*
-             * Step 5: Sending a request
-             */
+            * Step 4: Creating a producer and consumer
+            */
+            session = connection.createSession(1000, 1000);
+            requestProducer = session.createProducer(String.format("request.%s", options.getAccountName()),
+                    QoS.AT_LEAST_ONCE);
+            responseConsumer = session.createConsumer(String.format("response.%s", options.getAccountName()),
+                    1000, QoS.AT_LEAST_ONCE, true, null);
+            
+            /*
+            * Step 5: Sending a request
+            */
             AMQPMessage msg = new AMQPMessage();
             msg.setAmqpValue(new AmqpValue(new AMQPString("<FIXML>...</FIXML>")));
             Properties msgProp = new Properties();
-            msgProp.setReplyTo(new AddressString("response/response.ABCFR_ABCFRALMMACC1"));
+            msgProp.setReplyTo(new AddressString(String.format("response/response.%s", options.getAccountName())));
             msgProp.setCorrelationId(new MessageIdString(UUID.randomUUID().toString()));
             msg.setProperties(msgProp);
             requestProducer.send(msg);
-
+            
             LOGGER.info("REQUEST SENT:");
             LOGGER.info("#############");
             LOGGER.info("Correlation ID: {}", msg.getProperties().getCorrelationId().getValueString());
             LOGGER.info("Message Text  : {}", msg.getAmqpValue().getValue().getValueString());
             LOGGER.info("#############");
-
+            
             /*
-             * Step 6: Receive response
-             */
+            * Step 6: Receive response
+            */
             LOGGER.info("Waiting {} seconds for reply", TIMEOUT_MILLIS/1000);
             AMQPMessage receivedMsg = responseConsumer.receive(TIMEOUT_MILLIS);
             if (receivedMsg != null)
@@ -117,16 +121,15 @@ public class RequestResponse
         }
         finally
         {
-            // Closing the connection
-            if (requestProducer != null)
-            {
-                LOGGER.info("Closing producer");
-                requestProducer.close();
-            }
             if (responseConsumer != null)
             {
                 LOGGER.info("Closing consumer");
                 responseConsumer.close();
+            }
+            if (requestProducer != null)
+            {
+                LOGGER.info("Closing producer");
+                requestProducer.close();
             }
             if (session != null)
             {
@@ -135,7 +138,7 @@ public class RequestResponse
             }
             if (connection != null)
             {
-                // implicitly closes session and producers/consumers 
+                // implicitly closes session and producers/consumers
                 LOGGER.info("Closing connection");
                 connection.close();
             }
@@ -144,7 +147,17 @@ public class RequestResponse
     
     public static void main(String[] args) throws AMQPException
     {
-        RequestResponse requestResponse = new RequestResponse(args);
+        Options options = new Options.OptionsBuilder()
+                .accountName("ABCFR_ABCFRALMMACC1")
+                .hostname("ecag-fixml-simu1.deutsche-boerse.com")
+                .port(10170)
+                .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
+                .keystorePassword("123456")
+                .truststoreFilename("truststore")
+                .truststorePassword("123456")
+                .certificateAlias("abcfr_abcfralmmacc1")
+                .build();
+        RequestResponse requestResponse = new RequestResponse(options);
         requestResponse.run();
     }
 }

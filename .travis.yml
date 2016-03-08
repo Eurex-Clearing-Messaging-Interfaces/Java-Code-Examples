@@ -1,0 +1,10 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+- docker pull scholzj/fixml:sim
+- docker pull maven:3-jdk-7
+
+script: ./dockerRunIT.sh --use-sudo

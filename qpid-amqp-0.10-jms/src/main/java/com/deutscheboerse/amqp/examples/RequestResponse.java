@@ -16,13 +16,14 @@ import org.slf4j.LoggerFactory;
  */
 public class RequestResponse
 {
-    private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
-    
+
+    private final int timeoutInMillis;
     private InitialContext context;
-    
+
     public RequestResponse(Options options)
     {
+        this.timeoutInMillis = options.getTimeoutInMillis();
         try
         {
             Properties properties = new Properties();
@@ -52,8 +53,8 @@ public class RequestResponse
             LOGGER.error("Unable to proceed with request response", ex);
         }
     }
-    
-    public void run() throws JMSException
+
+    public void run() throws JMSException, NamingException
     {
         /*
         * Step 1: Initializing the context based on the properties file we prepared
@@ -63,7 +64,7 @@ public class RequestResponse
         Session session = null;
         MessageProducer requestProducer = null;
         MessageConsumer responseConsumer = null;
-        
+
         try
         {
             /*
@@ -73,41 +74,41 @@ public class RequestResponse
             connection = fact.createConnection();
             connection.setExceptionListener(listener);
             session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            
+
             /*
             * Step 3: Creating a producer and consumer
             */
             Destination requestDestination = (Destination) context.lookup("requestAddress");
             requestProducer = session.createProducer(requestDestination);
-            
+
             Destination responseDest = (Destination) context.lookup("responseAddress");
             responseConsumer = session.createConsumer(responseDest);
-            
+
             /*
             * Step 4: Starting the connection
             */
             connection.start();
             LOGGER.info("Connected");
-            
+
             /*
             * Step 5: Sending a request
             */
             TextMessage message = session.createTextMessage("<FIXML>...</FIXML>");
             message.setJMSCorrelationID(UUID.randomUUID().toString());
             message.setJMSReplyTo((Destination) context.lookup("replyAddress"));
-            
+
             requestProducer.send(message);
-            
+
             LOGGER.info("REQUEST SENT:");
             LOGGER.info("#############");
             LOGGER.info(message.toString());
             LOGGER.info("#############");
-            
+
             /*
             * Step 6: Receive response
             */
-            LOGGER.info("Waiting {} seconds for reply", TIMEOUT_MILLIS/1000);
-            Message receivedMsg = responseConsumer.receive(TIMEOUT_MILLIS);
+            LOGGER.info("Waiting {} seconds for reply", this.timeoutInMillis / 1000);
+            Message receivedMsg = responseConsumer.receive(this.timeoutInMillis);
             if (receivedMsg != null)
             {
                 LOGGER.info("RECEIVED MESSAGE:");
@@ -122,12 +123,13 @@ public class RequestResponse
             }
             else
             {
-                LOGGER.error("Reply wasn't received for {} seconds", TIMEOUT_MILLIS/1000);
+                LOGGER.error("Reply wasn't received for {} seconds", this.timeoutInMillis / 1000);
             }
         }
         catch (NamingException | JMSException e)
         {
             LOGGER.error("Unable to proceed with request responder", e);
+            throw e;
         }
         finally
         {
@@ -157,8 +159,8 @@ public class RequestResponse
             }
         }
     }
-    
-    public static void main(String[] args) throws JMSException
+
+    public static void main(String[] args) throws JMSException, NamingException
     {
         Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")

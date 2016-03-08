@@ -15,6 +15,7 @@
     <slf4j.version>1.7.12</slf4j.version>
     <compiler.plugin.version>3.3</compiler.plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <dependencyManagement>
@@ -23,6 +24,12 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>6.9.10</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -39,6 +46,16 @@
         <artifactId>qpid-jms-client</artifactId>
         <version>${qpid-jms-client.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.swiftmq</groupId>
+        <artifactId>amqp</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com</groupId>
+        <artifactId>swiftmq</artifactId>
+        <version>1.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -52,6 +69,10 @@
         <module>qpid-amqp-0.10-jms</module>
         <module>qpid-jms</module>
       </modules>
+      <properties>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
+      </properties>
     </profile>
     <profile>
       <id>swiftmq</id>
@@ -64,39 +85,75 @@
           <url>file://${user.dir}/repo-local</url>
         </repository>
       </repositories>
-      <dependencyManagement>
-        <dependencies>
-          <dependency>
-            <groupId>com.swiftmq</groupId>
-            <artifactId>amqp</artifactId>
-            <version>1.0</version>
-          </dependency>
-          <dependency>
-            <groupId>com</groupId>
-            <artifactId>swiftmq</artifactId>
-            <version>1.0</version>
-          </dependency>
-        </dependencies>
-      </dependencyManagement>
       <modules>
         <module>swiftmq</module>
       </modules>
+      <properties>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
+      </properties>
+    </profile>
+    <profile>
+      <id>integration-test</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>repo-local</id>
+          <url>file://${user.dir}/repo-local</url>
+        </repository>
+      </repositories>
+      <modules>
+        <module>qpid-amqp-0.10-jms</module>
+        <module>qpid-jms</module>
+      </modules>
+      <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+      </properties>
     </profile>
   </profiles>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler.plugin.version}</version>
-          <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler.plugin.version}</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19</version>
+        <configuration>
+          <skipTests>${skip.unit.tests}</skipTests>
+          <excludes>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19</version>
+        <executions>
+          <execution>
+            <id>integration-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <skipTests>${skip.integration.tests}</skipTests>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>

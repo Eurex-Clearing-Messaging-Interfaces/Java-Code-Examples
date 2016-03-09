@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Eurex-Clearing-Messaging-Interfaces/Java-Code-Examples.svg?branch=master)](https://travis-ci.org/Eurex-Clearing-Messaging-Interfaces/Java-Code-Examples)
+
 # How to compile and execute examples
 
 

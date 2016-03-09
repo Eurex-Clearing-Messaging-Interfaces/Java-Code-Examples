@@ -1,7 +1,5 @@
 package com.deutscheboerse.amqp.examples;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.jms.Connection;

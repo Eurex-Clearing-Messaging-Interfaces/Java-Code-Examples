@@ -2,7 +2,6 @@ package com.deutscheboerse.amqp.examples;
 
 public final class Options
 {
-
     private final int timeoutInMillis;
     private final String hostname;
     private final int port;
@@ -74,7 +73,6 @@ public final class Options
 
     public static class OptionsBuilder
     {
-
         private int nestedTimeoutInMillis = 100000;
         private String nestedHostname = "ecag-fixml-simu1.deutsche-boerse.com";
         private int nestedPort = 10170;
@@ -144,6 +142,5 @@ public final class Options
             return new Options(nestedTimeoutInMillis, nestedHostname, nestedPort, nestedAccountName, nestedKeystoreFileName,
                     nestedTruststoreFileName, nestedKeystorePassword, nestedTruststorePassword, nestedCertificateAlias);
         }
-
     }
 }

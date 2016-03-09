@@ -24,13 +24,13 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 public class BaseIT {
-    
+
     public static final String BROKER_HOSTNAME = "ecag-fixml-dev1";
     public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1";
-    
+
     protected Utils brokerUtils = new Utils();
-    
+
     @Test
     public void broadcastReceiverIT() throws JMSException, NamingException, InterruptedException
     {
@@ -45,12 +45,12 @@ public class BaseIT {
         }
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
         final String truststorePath = BaseIT.class.getResource("ecag-fixml-dev1.truststore").getPath();
-        
+
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(1000)
                 .accountName("ABCFR_ABCFRALMMACC1")
                 .hostname(BaseIT.BROKER_HOSTNAME)
-                .port(5671)
+                .port(15671)
                 .keystoreFilename(keystorePath)
                 .keystorePassword("123456")
                 .truststoreFilename(truststorePath)
@@ -60,7 +60,7 @@ public class BaseIT {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver(options);
         broadcastReceiver.run();
     }
-    
+
     @Test
     public void requestResponseIT() throws InterruptedException, JMSException, NamingException, ExecutionException
     {
@@ -93,7 +93,7 @@ public class BaseIT {
         });
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
         final String truststorePath = BaseIT.class.getResource("ecag-fixml-dev1.truststore").getPath();
-        
+
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(10000)
                 .accountName("ABCFR_ABCFRALMMACC1")

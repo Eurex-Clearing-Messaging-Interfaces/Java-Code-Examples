@@ -12,7 +12,7 @@ before_install:
   - docker pull scholzj/fixml:sim
 
 install:
-  - docker run -d -p 5671:5671 -p 5672:5672 --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
+  - docker run -d -p 15671:5671 -p 15672:5672 --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
 
 script:
   - mvn -P integration-test verify

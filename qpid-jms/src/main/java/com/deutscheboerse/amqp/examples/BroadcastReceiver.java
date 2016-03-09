@@ -15,20 +15,21 @@ import org.slf4j.LoggerFactory;
  */
 public class BroadcastReceiver
 {
-    private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
-    
+
+    private final int timeoutInMillis;
     private InitialContext context;
-    
+
     public BroadcastReceiver(Options options)
     {
         //System.setProperty("javax.net.debug", "ssl");
-        
+
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss Z");
         System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
-        
+
+        this.timeoutInMillis = options.getTimeoutInMillis();
         try
         {
             Properties properties = new Properties();
@@ -52,8 +53,8 @@ public class BroadcastReceiver
             LOGGER.error("Unable to proceed with broadcast receiver", ex);
         }
     }
-    
-    public void run() throws JMSException
+
+    public void run() throws JMSException, NamingException, InterruptedException
     {
         /*
         * Step 1: Initializing the context based on the properties file we prepared
@@ -62,7 +63,7 @@ public class BroadcastReceiver
         Connection connection = null;
         Session session = null;
         MessageConsumer broadcastConsumer = null;
-        
+
         try
         {
             /*
@@ -72,29 +73,30 @@ public class BroadcastReceiver
             connection = ((ConnectionFactory) context.lookup("connection")).createConnection();
             connection.setExceptionListener(listener);
             session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            
+
             /*
             * Step 3: Creating a broadcast receiver / consumer
             */
             broadcastConsumer = session.createConsumer((Destination) context.lookup("broadcastAddress"));
             broadcastConsumer.setMessageListener(listener);
-            
+
             /*
             * Step 4: Starting the connection
             */
             connection.start();
             LOGGER.info("Connected");
-            
+
             /*
             * Step 5: Receiving broadcast messages using listener for timeout seconds
             */
-            LOGGER.info("Receiving broadcast messages for {} seconds", TIMEOUT_MILLIS/1000);
-            listener.setTimeout(TIMEOUT_MILLIS);
-            LOGGER.info("Finished receiving broadcast messages for {} seconds", TIMEOUT_MILLIS/1000);
+            LOGGER.info("Receiving broadcast messages for {} seconds", this.timeoutInMillis / 1000);
+            listener.setTimeout(this.timeoutInMillis);
+            LOGGER.info("Finished receiving broadcast messages for {} seconds", this.timeoutInMillis / 1000);
         }
         catch (JMSException | NamingException | InterruptedException e)
         {
             LOGGER.error("Unable to proceed with broadcast receiver", e);
+            throw e;
         }
         finally
         {
@@ -119,8 +121,8 @@ public class BroadcastReceiver
             }
         }
     }
-    
-    public static void main(String[] args) throws JMSException
+
+    public static void main(String[] args) throws JMSException, NamingException, InterruptedException
     {
         Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")

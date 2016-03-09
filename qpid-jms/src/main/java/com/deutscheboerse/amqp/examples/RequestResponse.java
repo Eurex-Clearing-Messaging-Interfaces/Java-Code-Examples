@@ -16,20 +16,21 @@ import org.slf4j.LoggerFactory;
  */
 public class RequestResponse
 {
-    private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
-    
+
+    private final int timeoutInMillis;
     private InitialContext context;
-    
+
     public RequestResponse(Options options)
     {
         //System.setProperty("javax.net.debug", "ssl");
-        
+
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss Z");
         System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
-        
+
+        this.timeoutInMillis = options.getTimeoutInMillis();
         try
         {
             Properties properties = new Properties();
@@ -43,9 +44,6 @@ public class RequestResponse
                     options.getTruststoreFileName(),
                     options.getTruststorePassword(),
                     options.getCertificateAlias()));
-            properties.setProperty("queue.broadcastAddress", String.format(
-                    "broadcast.%s.TradeConfirmation",
-                    options.getAccountName()));
             properties.setProperty("topic.requestAddress", String.format("request.%s", options.getAccountName()));
             properties.setProperty("queue.responseAddress", String.format("response.%s", options.getAccountName()));
             properties.setProperty("topic.replyAddress", String.format("response/response.%s", options.getAccountName()));
@@ -57,7 +55,7 @@ public class RequestResponse
             LOGGER.error("Unable to proceed with broadcast receiver", ex);
         }
     }
-    
+
     public void run() throws JMSException
     {
         /*
@@ -68,7 +66,7 @@ public class RequestResponse
         Session session = null;
         MessageProducer requestProducer = null;
         MessageConsumer responseConsumer = null;
-        
+
         try
         {
             /*
@@ -78,7 +76,7 @@ public class RequestResponse
             connection = fact.createConnection();
             connection.setExceptionListener(listener);
             session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            
+
             /*
             * Step 3: Creating a producer and consumer
             */
@@ -86,33 +84,33 @@ public class RequestResponse
             requestProducer = session.createProducer(requestDestination);
             Destination responseDest = (Destination) context.lookup("responseAddress");
             responseConsumer = session.createConsumer(responseDest);
-            
+
             /*
             * Step 4: Starting the connection
             */
             connection.start();
             LOGGER.info("Connected");
-            
+
             /*
             * Step 5: Sending a request
             */
             TextMessage message = session.createTextMessage("<FIXML>...</FIXML>");
             message.setJMSCorrelationID(UUID.randomUUID().toString());
             message.setJMSReplyTo((Destination) context.lookup("replyAddress"));
-            
+
             requestProducer.send(message);
-            
+
             LOGGER.info("REQUEST SENT:");
             LOGGER.info("#############");
             LOGGER.info("Correlation ID: {}", message.getJMSCorrelationID());
             LOGGER.info("Message Text  {}: ", message.getText());
             LOGGER.info("#############");
-            
+
             /*
             * Step 6: Receive response
             */
-            LOGGER.info("Waiting {} seconds for reply", TIMEOUT_MILLIS/1000);
-            Message receivedMsg = responseConsumer.receive(TIMEOUT_MILLIS);
+            LOGGER.info("Waiting {} seconds for reply", this.timeoutInMillis / 1000);
+            Message receivedMsg = responseConsumer.receive(this.timeoutInMillis);
             if (receivedMsg != null)
             {
                 LOGGER.info("RECEIVED MESSAGE:");
@@ -127,7 +125,7 @@ public class RequestResponse
             }
             else
             {
-                LOGGER.error("Reply wasn't received for {} seonds", TIMEOUT_MILLIS/1000);
+                LOGGER.error("Reply wasn't received for {} seonds", this.timeoutInMillis / 1000);
             }
         }
         catch (NamingException | JMSException e)
@@ -162,7 +160,7 @@ public class RequestResponse
             }
         }
     }
-    
+
     public static void main(String[] args) throws JMSException
     {
         Options options = new Options.OptionsBuilder()

@@ -1,10 +1,18 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
 sudo: required
 
 services:
   - docker
 
 before_install:
-- docker pull scholzj/fixml:sim
-- docker pull maven:3-jdk-7
+  - docker pull scholzj/fixml:sim
 
-script: ./dockerRunIT.sh --use-sudo
+install:
+  - docker run -d -p 5671:5671 -p 5672:5672 --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
+
+script:
+  - mvn -P integration-test verify

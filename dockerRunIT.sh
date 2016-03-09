@@ -7,6 +7,7 @@ JAVA_CONTAINER_NAME=java-code-examples-host-$$
 JAVA_HOST=java-code-examples-host
 TMP_DIR=
 SUDO=
+SKIP_MVN_SETTINGS=false
 REPORTS_DIR=
 QPIDD_IMAGE_VERSION="fixml:sim"
 MVN_IMAGE_VERSION="3-jdk-7"
@@ -39,6 +40,7 @@ function print_help() {
     echo "  --qpidd-version=VERSION  Use specific Qpidd image version (default: ${QPIDD_IMAGE_VERSION})"
     echo "  --mvn-version=VERSION    Use specific Maven Docker image version (e.g. 3-jdk-8)"
     echo "  --use-sudo               Execute every docker command under sudo"
+    echo "  --skip-mvn-settings      Maven settings will be skipped (default: ${SKIP_MVN_SETTINGS})"
     echo "  --copy-reports-to=DIR    Copy failsafe-reports directory into the DIR"
     echo "  --help, -h, -?           Print this help and exit"
 }
@@ -57,6 +59,8 @@ function parse_cmdline_parameters() {
             MVN_IMAGE_VERSION=$(extract_parameter_value_from_string $1);;
         --use-sudo)
             SUDO="sudo";;
+        --skip-mvn-settings)
+            SKIP_MVN_SETTINGS="true";;
         --copy-reports-to=*)
             REPORTS_DIR=$(extract_parameter_value_from_string $1);;
         --help | -h | -?)
@@ -93,6 +97,7 @@ function start_tests_container() {
 
 # create and copy maven's settings.xml file with proxy settings into the docker image
 function prepare_maven_on_container() {
+    [ "${SKIP_MVN_SETTINGS}" == "true" ] && return 0
     cat > ${TMP_DIR}/settings.xml <<EOF
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -114,7 +119,6 @@ EOF
 
 # get source code into the docker container
 function prepare_sources_on_container() {
-    #${SUDO} docker exec ${JAVA_CONTAINER_NAME} bash -c "cd && svn export --username tacsvn --password 'makEsTa2u\$7U!#' --non-interactive https://tacsvn.xeop.de/svn/CM/ad/wmq-bridge/trunk wmq-bridge"
     ${SUDO} docker exec ${JAVA_CONTAINER_NAME} bash -c "cd && git clone https://github.com/Eurex-Clearing-Messaging-Interfaces/Java-Code-Examples.git java-code-examples"
     #${SUDO} docker cp /home/zeromic/src/java-code-examples ${JAVA_CONTAINER_NAME}:/root
 }

@@ -17,7 +17,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
-import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -32,7 +31,7 @@ public class BaseIT {
 
     protected Utils brokerUtils = new Utils();
 
-    @Test
+    //@Test
     public void broadcastReceiverIT() throws JMSException, NamingException, InterruptedException
     {
         final String broadcastMessageText = "Broadcast Text";

@@ -11,6 +11,7 @@ SKIP_MVN_SETTINGS=false
 REPORTS_DIR=
 QPIDD_IMAGE_VERSION="fixml:sim"
 MVN_IMAGE_VERSION="3-jdk-7"
+RESULT_CODE=0
 RESULTS_MSG="RESULTS:\n"
 
 trap "stop_and_remove_left_containers && exit 1" SIGINT SIGTERM
@@ -130,6 +131,7 @@ function execute_tests() {
     if [ ${RETURN_CODE} -eq 0 ] ; then
         RESULTS_MSG+=" RESULT: SUCCESS\n"
     else
+        RESULT_CODE=1
         RESULTS_MSG+=" RESULT: FAILURE\n"
     fi
 }
@@ -175,3 +177,5 @@ function copy_results() {
 parse_cmdline_parameters "$@"
 execute_all_runs
 print_results
+
+exit ${RESULT_CODE}

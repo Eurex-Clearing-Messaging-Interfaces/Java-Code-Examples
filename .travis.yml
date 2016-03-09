@@ -21,4 +21,4 @@ before_install:
 #  - docker run -d -P --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
 
 script:
-  - ./dockerRunIT.sh
+  - ./dockerRunIT.sh --skip-mvn-settings

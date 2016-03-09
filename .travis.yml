@@ -8,12 +8,20 @@ sudo: required
 services:
   - docker
 
+env:
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+
 before_install:
+  # upgrade docker-engine to specific version
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
   - docker pull scholzj/fixml:sim
 
-install:
-  - docker run -d -P --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
+#install:
+#  - docker run -d -P --name=ecag-fixml-dev1 --hostname=ecag-fixml-dev1 scholzj/fixml:sim
 
 script:
-  - docker ps
-  - mvn -P integration-test verify
+  - docker version
+  #- docker ps
+  - ./dockerRunIT.sh
+  #- mvn -P integration-test verify

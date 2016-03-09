@@ -115,7 +115,8 @@ EOF
 # get source code into the docker container
 function prepare_sources_on_container() {
     #${SUDO} docker exec ${JAVA_CONTAINER_NAME} bash -c "cd && svn export --username tacsvn --password 'makEsTa2u\$7U!#' --non-interactive https://tacsvn.xeop.de/svn/CM/ad/wmq-bridge/trunk wmq-bridge"
-    ${SUDO} docker cp /home/zeromic/src/java-code-examples ${JAVA_CONTAINER_NAME}:/root
+    ${SUDO} docker exec ${JAVA_CONTAINER_NAME} bash -c "cd && git clone https://github.com/Eurex-Clearing-Messaging-Interfaces/Java-Code-Examples.git java-code-examples"
+    #${SUDO} docker cp /home/zeromic/src/java-code-examples ${JAVA_CONTAINER_NAME}:/root
 }
 
 function execute_tests() {

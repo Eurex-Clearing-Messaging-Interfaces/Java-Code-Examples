@@ -50,7 +50,7 @@ public class BaseIT {
                 .timeoutInMillis(1000)
                 .accountName("ABCFR_ABCFRALMMACC1")
                 .hostname(BaseIT.BROKER_HOSTNAME)
-                .port(15671)
+                .port(5671)
                 .keystoreFilename(keystorePath)
                 .keystorePassword("123456")
                 .truststoreFilename(truststorePath)

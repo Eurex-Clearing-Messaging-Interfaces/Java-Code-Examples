@@ -31,7 +31,7 @@ public class BaseIT {
 
     protected Utils brokerUtils = new Utils();
 
-    //@Test
+    @Test
     public void broadcastReceiverIT() throws JMSException, NamingException, InterruptedException
     {
         final String broadcastMessageText = "Broadcast Text";
@@ -61,7 +61,7 @@ public class BaseIT {
         broadcastReceiver.run();
     }
 
-    //@Test
+    @Test
     public void requestResponseIT() throws InterruptedException, JMSException, NamingException, ExecutionException
     {
         ExecutorService executor = Executors.newFixedThreadPool(1);

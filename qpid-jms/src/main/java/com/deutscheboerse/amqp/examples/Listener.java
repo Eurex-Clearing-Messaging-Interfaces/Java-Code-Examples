@@ -61,15 +61,6 @@ public class Listener implements MessageListener, ExceptionListener
                 LOGGER.error("Unexpected message type delivered: {}", msg.toString());
             }
 
-            //@SuppressWarnings("unchecked")
-            Enumeration<?> propertyNames = msg.getPropertyNames();
-
-            while (propertyNames.hasMoreElements())
-            {
-                Object prop = propertyNames.nextElement();
-                LOGGER.info("{} = {}", prop, msg.getStringProperty((String) prop));
-            }
-
             LOGGER.info("Correlation ID {}", msg.getJMSCorrelationID());
             LOGGER.info("#################");
             msg.acknowledge();

@@ -117,7 +117,21 @@ public class RequestResponse
                 LOGGER.info("#################");
                 if (receivedMsg instanceof TextMessage)
                 {
-                    LOGGER.info("messageText = {}", ((TextMessage) receivedMsg).getText());
+                    LOGGER.info("Message Text  : {}", ((TextMessage) receivedMsg).getText());
+                }
+                else if (receivedMsg instanceof BytesMessage)
+                {
+                    BytesMessage  bytesMessage = (BytesMessage) receivedMsg;
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < bytesMessage.getBodyLength(); i++)
+                    {
+                        builder.append((char) bytesMessage.readByte());
+                    }
+                    LOGGER.info("Message Text = {}", builder.toString());
+                }
+                else
+                {
+                    LOGGER.error("Unexpected message type delivered: {}", receivedMsg.toString());
                 }
                 LOGGER.info("Correlation ID {}", receivedMsg.getJMSCorrelationID());
                 LOGGER.info("#################");

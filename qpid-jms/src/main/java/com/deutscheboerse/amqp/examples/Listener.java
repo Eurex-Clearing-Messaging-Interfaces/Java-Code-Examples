@@ -44,7 +44,7 @@ public class Listener implements MessageListener, ExceptionListener
             {
                 TextMessage textMessage = (TextMessage) msg;
                 String messageText = textMessage.getText();
-                LOGGER.info("messageText = {}", messageText);
+                LOGGER.info("Message Text = {}", messageText);
             }
             else if (msg instanceof BytesMessage)
             {
@@ -54,7 +54,11 @@ public class Listener implements MessageListener, ExceptionListener
                 {
                     builder.append((char) bytesMessage.readByte());
                 }
-                LOGGER.info("messageBytes = {}", builder.toString());
+                LOGGER.info("Message Text = {}", builder.toString());
+            }
+            else
+            {
+                LOGGER.error("Unexpected message type delivered: {}", msg.toString());
             }
 
             //@SuppressWarnings("unchecked")

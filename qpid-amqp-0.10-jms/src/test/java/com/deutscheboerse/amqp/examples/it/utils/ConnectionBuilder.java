@@ -10,7 +10,7 @@ import javax.naming.NamingException;
 
 public class ConnectionBuilder
 {
-    public static final String TCP_PORT = "5672";
+    public static final String TCP_PORT = "15672";
     public static final String ADMIN_USERNAME = "admin";
     public static final String ADMIN_PASSWORD = "admin";
 

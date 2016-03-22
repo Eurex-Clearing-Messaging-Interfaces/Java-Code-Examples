@@ -25,5 +25,5 @@ install:
   - docker run -d -p 35672:5672 -p 35671:5671 scholzj/fixml:sim
 
 script:
-   - mvn test -B
+   - mvn -P integration-test verify
 #  - ./dockerRunIT.sh --skip-mvn-settings

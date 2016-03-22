@@ -12,13 +12,7 @@ addons:
   hosts:
     - ecag-fixml-dev1
 
-#env:
-#    global:
-#        - DOCKER_VERSION=1.10.1-0~trusty
-
 before_install:
-  # upgrade docker-engine to specific version
-  #- sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
   - docker pull scholzj/fixml:sim
 
 install:
@@ -26,4 +20,3 @@ install:
 
 script:
    - mvn -P integration-test verify
-#  - ./dockerRunIT.sh --skip-mvn-settings

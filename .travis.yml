@@ -20,3 +20,6 @@ install:
 
 script:
    - mvn -P integration-test verify
+   
+after_success:
+  - mvn clean test jacoco:report coveralls:report

@@ -56,6 +56,7 @@ public class Listener implements MessageListener, ExceptionListener
         catch (JMSException ex)
         {
             LOGGER.error("Failed to process incomming message", ex);
+            this.exceptionReceived = true;
         }
     }
 
@@ -75,5 +76,4 @@ public class Listener implements MessageListener, ExceptionListener
     {
         return this.exceptionReceived;
     }
-
 }

@@ -17,10 +17,11 @@ public class BroadcastReceiver
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(BroadcastReceiver.class);
 
+    private final InitialContext context;
     private final int timeoutInMillis;
-    private InitialContext context;
+    private final Listener listener = new Listener();
 
-    public BroadcastReceiver(Options options)
+    public BroadcastReceiver(Options options) throws NamingException
     {
         //System.setProperty("javax.net.debug", "ssl");
 
@@ -51,6 +52,7 @@ public class BroadcastReceiver
         catch (NamingException ex)
         {
             LOGGER.error("Unable to proceed with broadcast receiver", ex);
+            throw ex;
         }
     }
 
@@ -59,7 +61,6 @@ public class BroadcastReceiver
         /*
         * Step 1: Initializing the context based on the properties file we prepared
         */
-        Listener listener = new Listener();
         Connection connection = null;
         Session session = null;
         MessageConsumer broadcastConsumer = null;
@@ -90,7 +91,10 @@ public class BroadcastReceiver
             * Step 5: Receiving broadcast messages using listener for timeout seconds
             */
             LOGGER.info("Receiving broadcast messages for {} seconds", this.timeoutInMillis / 1000);
-            listener.setTimeout(this.timeoutInMillis);
+            synchronized (this)
+            {
+                this.wait(this.timeoutInMillis);
+            }
             LOGGER.info("Finished receiving broadcast messages for {} seconds", this.timeoutInMillis / 1000);
         }
         catch (JMSException | NamingException | InterruptedException e)
@@ -120,6 +124,16 @@ public class BroadcastReceiver
                 connection.close();
             }
         }
+    }
+
+    public int getMessagesReceivedCount()
+    {
+        return this.listener.getMessagesReceivedCount();
+    }
+
+    public boolean isExceptionReceived()
+    {
+        return this.listener.isExceptionReceived();
     }
 
     public static void main(String[] args) throws JMSException, NamingException, InterruptedException

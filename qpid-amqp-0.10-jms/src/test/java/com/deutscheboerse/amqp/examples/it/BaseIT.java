@@ -17,6 +17,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -59,6 +60,8 @@ public class BaseIT {
                 .build();
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver(options);
         broadcastReceiver.run();
+        Assert.assertEquals(broadcastReceiver.getMessagesReceivedCount(), 1, "Invalid broadcast messages received");
+        Assert.assertFalse(broadcastReceiver.isExceptionReceived(), "Exception while receiving broadcast");
     }
 
     @Test

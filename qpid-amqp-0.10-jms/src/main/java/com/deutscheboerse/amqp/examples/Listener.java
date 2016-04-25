@@ -1,7 +1,5 @@
 package com.deutscheboerse.amqp.examples;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.jms.BytesMessage;
 import javax.jms.ExceptionListener;
@@ -19,19 +17,9 @@ import org.slf4j.LoggerFactory;
 public class Listener implements MessageListener, ExceptionListener
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private Timer timer;
-    
-    public void setTimeout(int miliseconds) throws InterruptedException
-    {
-        timer = new Timer();
-        timer.schedule(new StopListening(this), miliseconds);
-        synchronized (this)
-        {
-            this.wait();
-        }
-        timer.cancel();
-    }
-    
+    private int messagesReceivedCount = 0;
+    private boolean exceptionReceived = false;
+
     @Override
     public void onMessage(Message msg)
     {
@@ -58,10 +46,12 @@ public class Listener implements MessageListener, ExceptionListener
             else
             {
                 LOGGER.error("Unexpected message type delivered: {}", msg.toString());
+                this.exceptionReceived = true;
             }
             LOGGER.info("Correlation ID {}", msg.getJMSCorrelationID());
             LOGGER.info("#################");
             msg.acknowledge();
+            this.messagesReceivedCount++;
         }
         catch (JMSException ex)
         {
@@ -73,23 +63,17 @@ public class Listener implements MessageListener, ExceptionListener
     public void onException(JMSException ex)
     {
         LOGGER.error("Exception caught from connection object. Reconnect needed. Exiting ... ", ex);
-        System.exit(0);
+        this.exceptionReceived = true;
     }
-    
-    private class StopListening extends TimerTask
+
+    public int getMessagesReceivedCount()
     {
-        private final Listener listener;
-        public StopListening(Listener listener)
-        {
-            this.listener = listener;
-        }
-        
-        public void run()
-        {
-            synchronized (this.listener)
-            {
-                this.listener.notify();   
-            }
-        }
+        return this.messagesReceivedCount;
     }
+
+    public boolean isExceptionReceived()
+    {
+        return this.exceptionReceived;
+    }
+
 }

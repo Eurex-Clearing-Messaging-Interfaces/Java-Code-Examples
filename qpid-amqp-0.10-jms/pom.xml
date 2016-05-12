@@ -14,6 +14,13 @@
   <packaging>jar</packaging>
   <version>1.0</version>
 
+  <repositories>
+    <repository>
+      <id>staging</id>
+      <url>https://repository.apache.org/content/repositories/orgapacheqpid-1073</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency> 
       <groupId>org.slf4j</groupId>

@@ -11,3 +11,6 @@ test:
     - docker run -d -p 35672:5672 -p 35671:5671 ecmi/fixml:sim
   override:
     - mvn -P integration-test verify
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;

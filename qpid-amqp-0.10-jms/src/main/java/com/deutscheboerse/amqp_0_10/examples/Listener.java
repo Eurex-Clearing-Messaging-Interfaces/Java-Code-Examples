@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_0_10.examples;
 
 
 import javax.jms.BytesMessage;
@@ -20,13 +20,13 @@ public class Listener implements MessageListener, ExceptionListener
     private int messagesReceivedCount = 0;
     private boolean exceptionReceived = false;
 
+    @Override
     public void onMessage(Message msg)
     {
         try
         {
             LOGGER.info("RECEIVED MESSAGE:");
             LOGGER.info("#################");
-
             if (msg instanceof TextMessage)
             {
                 TextMessage textMessage = (TextMessage) msg;
@@ -36,7 +36,7 @@ public class Listener implements MessageListener, ExceptionListener
             else if (msg instanceof BytesMessage)
             {
                 BytesMessage  bytesMessage = (BytesMessage) msg;
-                StringBuilder builder      = new StringBuilder();
+                StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytesMessage.getBodyLength(); i++)
                 {
                     builder.append((char) bytesMessage.readByte());
@@ -67,7 +67,7 @@ public class Listener implements MessageListener, ExceptionListener
         this.exceptionReceived = true;
     }
 
-        public int getMessagesReceivedCount()
+    public int getMessagesReceivedCount()
     {
         return this.messagesReceivedCount;
     }

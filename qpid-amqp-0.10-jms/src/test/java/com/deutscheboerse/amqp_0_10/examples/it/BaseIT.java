@@ -1,10 +1,10 @@
-package com.deutscheboerse.amqp.examples.it;
+package com.deutscheboerse.amqp_0_10.examples.it;
 
-import com.deutscheboerse.amqp.examples.BroadcastReceiver;
-import com.deutscheboerse.amqp.examples.RequestResponse;
-import com.deutscheboerse.amqp.examples.Options;
-import com.deutscheboerse.amqp.examples.it.utils.AutoCloseableConnection;
-import com.deutscheboerse.amqp.examples.it.utils.Utils;
+import com.deutscheboerse.amqp_0_10.examples.BroadcastReceiver;
+import com.deutscheboerse.amqp_0_10.examples.RequestResponse;
+import com.deutscheboerse.amqp_0_10.examples.Options;
+import com.deutscheboerse.amqp_0_10.examples.it.utils.AutoCloseableConnection;
+import com.deutscheboerse.amqp_0_10.examples.it.utils.Utils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +29,6 @@ public class BaseIT {
     public static final String BROKER_HOSTNAME = "ecag-fixml-dev1";
     public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1";
-    public static final String RESPONSE_QUEUE = "response.ABCFR_ABCFRALMMACC1";
 
     protected Utils brokerUtils = new Utils();
 
@@ -85,7 +84,7 @@ public class BaseIT {
                     String receivedMessageText = ((TextMessage) requestMessage).getText();
                     assertEquals("<FIXML>...</FIXML>", receivedMessageText, "Received message doesn't contain expected text");
                     Message responseMessage = session.createTextMessage("RESPONSE TO:" + receivedMessageText);
-                    MessageProducer responseProducer = session.createProducer(BaseIT.this.brokerUtils.getQueue(RESPONSE_QUEUE));
+                    MessageProducer responseProducer = session.createProducer(requestMessage.getJMSReplyTo());
                     responseProducer.send(responseMessage);
                 }
                 catch (JMSException | NamingException ex)

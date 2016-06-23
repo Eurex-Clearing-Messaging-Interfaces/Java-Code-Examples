@@ -1,12 +1,12 @@
-package com.deutscheboerse.amqp.examples;
-
-import javax.jms.*;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+package com.deutscheboerse.amqp_0_10.examples;
 
 import java.util.Properties;
 import java.util.UUID;
+
+import javax.jms.*;
 import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,40 +23,38 @@ public class RequestResponse
 
     public RequestResponse(Options options)
     {
-        //System.setProperty("javax.net.debug", "ssl");
-
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
-        System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
-        System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "yyyy-MM-dd HH:mm:ss Z");
-        System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
-
         this.timeoutInMillis = options.getTimeoutInMillis();
         try
         {
             Properties properties = new Properties();
-            properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+            properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.qpid.jndi.PropertiesFileInitialContextFactory");
             properties.setProperty("connectionfactory.connection", String.format(
-                    "amqps://%s:%d?transport.keyStoreLocation=%s&transport.keyStorePassword=%s&transport.trustStoreLocation=%s&transport.trustStorePassword=%s&transport.keyAlias=%s&amqp.idleTimeout=0",
+                    "amqp://:@App1/?brokerlist='tcp://%s:%d?ssl='true'&trust_store='%s'&trust_store_password='%s'&key_store='%s'&key_store_password='%s'&sasl_mechs='EXTERNAL'&ssl_cert_alias='%s''",
                     options.getHostname(),
                     options.getPort(),
-                    options.getKeystoreFileName(),
-                    options.getKeystorePassword(),
                     options.getTruststoreFileName(),
                     options.getTruststorePassword(),
+                    options.getKeystoreFileName(),
+                    options.getKeystorePassword(),
                     options.getCertificateAlias()));
-            properties.setProperty("topic.requestAddress", String.format("request.%s", options.getAccountName()));
-            properties.setProperty("queue.responseAddress", String.format("response.%s", options.getAccountName()));
-            properties.setProperty("topic.replyAddress", String.format("response/response.%s", options.getAccountName()));
-
+            properties.setProperty("destination.requestAddress", String.format(
+                    "request.%s; { node: { type: topic }, create: never }",
+                    options.getAccountName()));
+            properties.setProperty("destination.replyAddress", String.format(
+                    "response/response.%s.response_queue; { create: receiver, node: {type: topic } }",
+                    options.getAccountName()));
+            properties.setProperty("destination.responseAddress", String.format(
+                    "response.%s.response_queue; {create: receiver, assert: never, node: { type: queue, x-declare: { auto-delete: true, exclusive: false, arguments: {'qpid.policy_type': ring, 'qpid.max_count': 1000, 'qpid.max_size': 1000000}}, x-bindings: [{exchange: 'response', queue: 'response.%s.response_queue', key: 'response.%s.response_queue'}]}}",
+                    options.getAccountName(), options.getAccountName(), options.getAccountName()));
             this.context = new InitialContext(properties);
         }
         catch (NamingException ex)
         {
-            LOGGER.error("Unable to proceed with broadcast receiver", ex);
+            LOGGER.error("Unable to proceed with request response", ex);
         }
     }
 
-    public void run() throws JMSException
+    public void run() throws JMSException, NamingException
     {
         /*
         * Step 1: Initializing the context based on the properties file we prepared
@@ -82,6 +80,7 @@ public class RequestResponse
             */
             Destination requestDestination = (Destination) context.lookup("requestAddress");
             requestProducer = session.createProducer(requestDestination);
+
             Destination responseDest = (Destination) context.lookup("responseAddress");
             responseConsumer = session.createConsumer(responseDest);
 
@@ -102,8 +101,7 @@ public class RequestResponse
 
             LOGGER.info("REQUEST SENT:");
             LOGGER.info("#############");
-            LOGGER.info("Correlation ID: {}", message.getJMSCorrelationID());
-            LOGGER.info("Message Text  {}: ", message.getText());
+            LOGGER.info(message.toString());
             LOGGER.info("#############");
 
             /*
@@ -139,12 +137,13 @@ public class RequestResponse
             }
             else
             {
-                LOGGER.error("Reply wasn't received for {} seonds", this.timeoutInMillis / 1000);
+                LOGGER.error("Reply wasn't received for {} seconds", this.timeoutInMillis / 1000);
             }
         }
         catch (NamingException | JMSException e)
         {
             LOGGER.error("Unable to proceed with request responder", e);
+            throw e;
         }
         finally
         {
@@ -175,7 +174,7 @@ public class RequestResponse
         }
     }
 
-    public static void main(String[] args) throws JMSException
+    public static void main(String[] args) throws JMSException, NamingException
     {
         Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")

@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples.it.utils;
+package com.deutscheboerse.amqp_1_0.examples.it.utils;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;

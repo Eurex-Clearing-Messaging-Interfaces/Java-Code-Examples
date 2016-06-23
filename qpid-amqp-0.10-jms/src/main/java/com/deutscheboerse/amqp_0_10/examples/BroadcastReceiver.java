@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_0_10.examples;
 
 import java.util.Properties;
 

@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples.it.utils;
+package com.deutscheboerse.amqp_1_0.examples.it.utils;
 
 import java.util.Properties;
 import javax.jms.JMSException;
@@ -17,22 +17,18 @@ public class Utils
     public Queue getQueue(String queueName) throws NamingException
     {
         Properties props = new Properties();
-        props.setProperty("java.naming.factory.initial", "org.apache.qpid.jndi.PropertiesFileInitialContextFactory");
-        props.setProperty("destination.queue", queueName + "; { node: { type: queue }, create: never, assert: never }");
-
+        props.setProperty("java.naming.factory.initial", "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+        props.setProperty("queue.queue", queueName);
         InitialContext ctx = new InitialContext(props);
-
-        return (Queue)ctx.lookup("queue");
+        return (Queue) ctx.lookup("queue");
     }
 
-    public Topic getTopic(String topicName) throws NamingException
+    public Topic getTopic(String queueName) throws NamingException
     {
         Properties props = new Properties();
-        props.setProperty("java.naming.factory.initial", "org.apache.qpid.jndi.PropertiesFileInitialContextFactory");
-        props.setProperty("destination.topic", topicName + "; { node: { type: topic }, create: never, assert: never }");
-
+        props.setProperty("java.naming.factory.initial", "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+        props.setProperty("topic.topic", queueName);
         InitialContext ctx = new InitialContext(props);
-
-        return (Topic)ctx.lookup("topic");
+        return (Topic) ctx.lookup("topic");
     }
 }

@@ -14,3 +14,8 @@ test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mkdir -p $CIRCLE_ARTIFACTS/coverage/0.10/
+    - mkdir -p $CIRCLE_ARTIFACTS/coverage/1.0/
+    - cp -r qpid-amqp-0.10-jms/target/site/jacoco/* $CIRCLE_ARTIFACTS/coverage/0.10/
+    - cp -r qpid-jms/target/site/jacoco/* $CIRCLE_ARTIFACTS/coverage/0.10/
+

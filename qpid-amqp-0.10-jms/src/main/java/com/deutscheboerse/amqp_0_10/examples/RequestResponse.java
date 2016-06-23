@@ -138,6 +138,7 @@ public class RequestResponse
             else
             {
                 LOGGER.error("Reply wasn't received for {} seconds", this.timeoutInMillis / 1000);
+                throw new java.lang.IllegalStateException("Reply wasn't received");
             }
         }
         catch (NamingException | JMSException e)

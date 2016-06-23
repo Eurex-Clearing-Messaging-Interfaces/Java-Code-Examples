@@ -56,7 +56,7 @@ public class RequestResponse
         }
     }
 
-    public void run() throws JMSException
+    public void run() throws JMSException, NamingException
     {
         /*
         * Step 1: Initializing the context based on the properties file we prepared
@@ -140,11 +140,13 @@ public class RequestResponse
             else
             {
                 LOGGER.error("Reply wasn't received for {} seonds", this.timeoutInMillis / 1000);
+                throw new java.lang.IllegalStateException("Reply wasn't received");
             }
         }
         catch (NamingException | JMSException e)
         {
             LOGGER.error("Unable to proceed with request responder", e);
+            throw e;
         }
         finally
         {
@@ -175,7 +177,7 @@ public class RequestResponse
         }
     }
 
-    public static void main(String[] args) throws JMSException
+    public static void main(String[] args) throws JMSException, NamingException
     {
         Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")

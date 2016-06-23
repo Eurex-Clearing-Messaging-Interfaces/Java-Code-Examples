@@ -35,7 +35,7 @@ public class Listener implements MessageListener, ExceptionListener
             }
             else if (msg instanceof BytesMessage)
             {
-                BytesMessage  bytesMessage = (BytesMessage) msg;
+                BytesMessage bytesMessage = (BytesMessage) msg;
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytesMessage.getBodyLength(); i++)
                 {

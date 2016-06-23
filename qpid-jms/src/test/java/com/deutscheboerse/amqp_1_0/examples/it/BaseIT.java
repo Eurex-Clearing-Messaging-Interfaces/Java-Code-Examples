@@ -47,7 +47,7 @@ public class BaseIT {
             broadcastProducer.send(textMessage);
             BytesMessage bytesMessage = session.createBytesMessage();
             bytesMessage.writeUTF(broadcastMessageText);
-            broadcastProducer.send(textMessage);
+            broadcastProducer.send(bytesMessage);
 
         }
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();

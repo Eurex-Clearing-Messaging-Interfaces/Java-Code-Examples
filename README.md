@@ -42,22 +42,22 @@ documentation:
 ## Execution (all modules)
 
 ### Broadcast Receiver
-  $ java -cp "\<module\>/target/classes/:\<module\>target/dependency/*" com.deutscheboerse.amqp.examples.BroadcastReceiver
+  $ java -cp "\<module\>/target/classes/:\<module\>target/dependency/*" \<class\>
 
-where \<module\> should be replaced again by one of the modules as in configuration. Example how to start client using AMQP 1.0
+where \<module\> should be replaced again by one of the modules as in configuration and \<class\> with the class which should run. Example how to start client using AMQP 1.0
 protocol with Qpid JMS client:
 
-  $ java -cp "qpid-jms/target/classes/:qpid-jms/target/dependency/*" com.deutscheboerse.amqp.examples.BroadcastReceiver
+  $ java -cp "qpid-jms/target/classes/:qpid-jms/target/dependency/*" com.deutscheboerse.amqp_1_0.examples.BroadcastReceiver
 
 
 ### Request Response
 
-  $ java -cp "\<module\>/target/classes/:\<module\>target/dependency/*" com.deutscheboerse.amqp.examples.RequestResponse
+  $ java -cp "\<module\>/target/classes/:\<module\>target/dependency/*" \<class\>
 
-where \<module\> should be replaced again by one of the modules as in configuration. Example how to start client using AMQP 0.10
+where \<module\> should be replaced again by one of the modules as in configuration and \<class\> with the class which should run. Example how to start client using AMQP 0.10
 protocol with Qpid JMS client:
 
-  $ java -cp "qpid-amqp-0.10-jms/target/classes/:qpid-amqp-0.10-jms/target/dependency/*" com.deutscheboerse.amqp.examples.RequestResponse
+  $ java -cp "qpid-amqp-0.10-jms/target/classes/:qpid-amqp-0.10-jms/target/dependency/*" com.deutscheboerse.amqp_0_10.examples.RequestResponse
 
 ## Stop example
 

@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_swiftmq.examples;
 
 import java.util.UUID;
 
@@ -13,6 +13,7 @@ import com.swiftmq.amqp.v100.client.Session;
 import com.swiftmq.amqp.v100.client.UnsupportedProtocolVersionException;
 import com.swiftmq.amqp.v100.generated.messaging.message_format.*;
 import com.swiftmq.amqp.v100.messaging.AMQPMessage;
+import com.swiftmq.amqp.v100.types.AMQPBinary;
 import com.swiftmq.amqp.v100.types.AMQPString;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -23,10 +24,10 @@ import org.slf4j.LoggerFactory;
  */
 public class RequestResponse
 {
-    private static final int TIMEOUT_MILLIS = 100000;
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestResponse.class);
-    
+
     private final Options options;
+    private final int timeoutInMillis;
 
     public RequestResponse(Options options)
     {
@@ -39,10 +40,10 @@ public class RequestResponse
 //        System.setProperty("swiftmq.amqp.debug", "true");
 //        System.setProperty("swiftmq.amqp.frame.debug", "true");
         this.options = options;
+        this.timeoutInMillis = options.getTimeoutInMillis();
     }
     
-    public void run() throws AMQPException
-    {
+    public void run() throws AMQPException, UnsupportedProtocolVersionException, IOException, AuthenticationException {
         /*
         * Step 1: Initializing the variables
         */
@@ -50,7 +51,7 @@ public class RequestResponse
         Session session = null;
         Producer requestProducer = null;
         Consumer responseConsumer = null;
-        
+
         try
         {
             /*
@@ -75,8 +76,9 @@ public class RequestResponse
             session = connection.createSession(1000, 1000);
             requestProducer = session.createProducer(String.format("request.%s", options.getAccountName()),
                     QoS.AT_LEAST_ONCE);
+            String correlationID = UUID.randomUUID().toString();
             responseConsumer = session.createConsumer(String.format("response.%s", options.getAccountName()),
-                    1000, QoS.AT_LEAST_ONCE, true, null);
+                    1000, QoS.AT_LEAST_ONCE, true, "\"amqp.correlation_id\"='" + correlationID + "'");
             
             /*
             * Step 5: Sending a request
@@ -85,7 +87,7 @@ public class RequestResponse
             msg.setAmqpValue(new AmqpValue(new AMQPString("<FIXML>...</FIXML>")));
             Properties msgProp = new Properties();
             msgProp.setReplyTo(new AddressString(String.format("response/response.%s", options.getAccountName())));
-            msgProp.setCorrelationId(new MessageIdString(UUID.randomUUID().toString()));
+            msgProp.setCorrelationId(new MessageIdString(correlationID));
             msg.setProperties(msgProp);
             requestProducer.send(msg);
             
@@ -98,26 +100,27 @@ public class RequestResponse
             /*
             * Step 6: Receive response
             */
-            LOGGER.info("Waiting {} seconds for reply", TIMEOUT_MILLIS/1000);
-            AMQPMessage receivedMsg = responseConsumer.receive(TIMEOUT_MILLIS);
+            LOGGER.info("Waiting {} seconds for reply", timeoutInMillis/1000);
+            AMQPMessage receivedMsg = responseConsumer.receive(timeoutInMillis);
             if (receivedMsg != null)
             {
                 LOGGER.info("RECEIVED MESSAGE:");
                 LOGGER.info("#################");
                 LOGGER.info("Correlation ID: {}", receivedMsg.getProperties().getCorrelationId().getValueString());
-                LOGGER.info("Message Text  : {}", new String(receivedMsg.getData().get(0).getValue()));
+                //LOGGER.info("Message Text  : {}", new String(receivedMsg.getData().get(0).getValue()));
                 LOGGER.info("#################");
                 receivedMsg.accept();
             }
             else
             {
-                LOGGER.error("Reply wasn't received for {} seconds", TIMEOUT_MILLIS/1000);
+                LOGGER.error("Reply wasn't received for {} seconds", timeoutInMillis/1000);
+                throw new java.lang.IllegalStateException("Reply wasn't received");
             }
         }
         catch (IOException | UnsupportedProtocolVersionException | AuthenticationException | AMQPException ex)
         {
             LOGGER.error("Failed to connect and create consumer or producer!", ex);
-            System.exit(1);
+            throw ex;
         }
         finally
         {
@@ -145,9 +148,9 @@ public class RequestResponse
         }
     }
     
-    public static void main(String[] args) throws AMQPException
-    {
+    public static void main(String[] args) throws AMQPException, IOException, UnsupportedProtocolVersionException, AuthenticationException {
         Options options = new Options.OptionsBuilder()
+                .timeoutInMillis(10000)
                 .accountName("ABCFR_ABCFRALMMACC1")
                 .hostname("ecag-fixml-simu1.deutsche-boerse.com")
                 .port(10170)

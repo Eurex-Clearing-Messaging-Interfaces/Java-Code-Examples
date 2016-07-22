@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_swiftmq.examples;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,7 +26,8 @@ public class Listener
     private int timeout;
     private final Consumer consumer;
     private final ExecutorService service = Executors.newFixedThreadPool(1);
-    private boolean received = false;
+    private int messagesReceivedCount = 0;
+    private boolean exceptionReceived = false;
 
     public Listener(Consumer consumer)
     {
@@ -46,9 +47,9 @@ public class Listener
         timer.cancel();
         future.cancel(true);
         service.shutdown();
-        if (!received)
+        if (messagesReceivedCount == 0)
         {
-            LOGGER.error("Reply wasn't received for {} seconds", timeout/1000);
+            LOGGER.error("No message received for {} seconds", timeout/1000);
         }
     }
     
@@ -73,13 +74,13 @@ public class Listener
                 AMQPMessage receivedMsg = consumer.receive();
                 if (receivedMsg != null)
                 {
-                    Listener.this.received = true;
+                    Listener.this.messagesReceivedCount++;
                     LOGGER.info("RECEIVED MESSAGE:");
                     LOGGER.info("#################");
-                    String correlationId = (receivedMsg.getProperties() == null) ? "null" : receivedMsg.getProperties().getCorrelationId().getValueString();
+                    /*String correlationId = (receivedMsg.getProperties() == null) ? "null" : receivedMsg.getProperties().getCorrelationId().getValueString();
                     LOGGER.info("Correlation ID: {}", correlationId);
                     LOGGER.info("Message Text  : {}", new String(receivedMsg.getData().get(0).getValue()));
-                    LOGGER.info("#################");
+                    LOGGER.info("#################");*/
                     try
                     {
                         receivedMsg.accept();
@@ -87,6 +88,7 @@ public class Listener
                     catch (InvalidStateException e)
                     {
                         LOGGER.error("Failed to acknowledge message.");
+                        Listener.this.exceptionReceived = true;
                     }
                 }
                 else
@@ -95,5 +97,15 @@ public class Listener
                 }
             }
         }
+    }
+
+    public int getMessagesReceivedCount()
+    {
+        return this.messagesReceivedCount;
+    }
+
+    public boolean isExceptionReceived()
+    {
+        return this.exceptionReceived;
     }
 }

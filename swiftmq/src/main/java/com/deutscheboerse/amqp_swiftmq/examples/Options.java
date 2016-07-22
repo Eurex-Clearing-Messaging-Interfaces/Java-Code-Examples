@@ -1,7 +1,8 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_swiftmq.examples;
 
 public final class Options
 {
+    private final int timeoutInMillis;
     private final String hostname;
     private final int port;
     private final String accountName;
@@ -11,9 +12,10 @@ public final class Options
     private final String truststorePassword;
     private final String certificateAlias;
     
-    private Options(String hostname, int port, String accountName, String keystoreFileName, String truststoreFileName,
+    private Options(int timeoutInMillis, String hostname, int port, String accountName, String keystoreFileName, String truststoreFileName,
             String keystorePassword, String truststorePassword, String certificateAlias)
     {
+        this.timeoutInMillis = timeoutInMillis;
         this.hostname = hostname;
         this.port = port;
         this.accountName = accountName;
@@ -23,7 +25,12 @@ public final class Options
         this.truststorePassword = truststorePassword;
         this.certificateAlias = certificateAlias;
     }
-    
+
+    public int getTimeoutInMillis()
+    {
+        return timeoutInMillis;
+    }
+
     public String getHostname()
     {
         return hostname;
@@ -66,7 +73,7 @@ public final class Options
     
     public static class OptionsBuilder
     {
-        
+        private int nestedTimeoutInMillis = 100000;
         private String nestedHostname = "ecag-fixml-simu1.deutsche-boerse.com";
         private int nestedPort = 10170;
         private String nestedAccountName = "ABCFR_ABCFRALMMACC1";
@@ -75,6 +82,12 @@ public final class Options
         private String nestedKeystorePassword = "123456";
         private String nestedTruststorePassword = "123456";
         private String nestedCertificateAlias = "abcfr_abcfralmmacc1";
+
+        public OptionsBuilder timeoutInMillis(int timeout)
+        {
+            this.nestedTimeoutInMillis = timeout;
+            return this;
+        }
 
         public OptionsBuilder hostname(String nestedHostname)
         {
@@ -126,7 +139,7 @@ public final class Options
         
         public Options build()
         {
-            return new Options(nestedHostname, nestedPort, nestedAccountName, nestedKeystoreFileName,
+            return new Options(nestedTimeoutInMillis, nestedHostname, nestedPort, nestedAccountName, nestedKeystoreFileName,
                     nestedTruststoreFileName, nestedKeystorePassword, nestedTruststorePassword, nestedCertificateAlias);
         }
         

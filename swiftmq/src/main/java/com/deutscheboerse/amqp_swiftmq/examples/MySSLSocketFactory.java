@@ -1,4 +1,4 @@
-package com.deutscheboerse.amqp.examples;
+package com.deutscheboerse.amqp_swiftmq.examples;
 
 import com.swiftmq.net.JSSESocketFactory;
 

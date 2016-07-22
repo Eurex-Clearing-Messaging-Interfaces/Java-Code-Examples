@@ -49,7 +49,6 @@ public class BaseIT {
             Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
             MessageProducer broadcastProducer = session.createProducer(this.brokerUtils.getQueue(BROADCAST_QUEUE));
             Message textMessage = session.createTextMessage(broadcastMessageText);
-            textMessage.setStringProperty("business_date", "20160813");
             broadcastProducer.send(textMessage);
             BytesMessage bytesMessage = session.createBytesMessage();
             bytesMessage.setStringProperty("business_date", "20160813");
@@ -97,7 +96,6 @@ public class BaseIT {
                     String receivedMessageText = ((TextMessage) requestMessage).getText();
                     assertEquals("<FIXML>...</FIXML>", receivedMessageText, "First received message doesn't contain expected text");
                     Message responseMessage = session.createTextMessage("RESPONSE TO:" + receivedMessageText);
-                    responseMessage.setJMSCorrelationID(requestMessage.getJMSCorrelationID());
                     MessageProducer responseProducer = session.createProducer(BaseIT.this.brokerUtils.getQueue(RESPONSE_QUEUE));
                     responseProducer.send(responseMessage);
                     // receive request message and create response as a bytes message
@@ -107,7 +105,6 @@ public class BaseIT {
                     assertEquals("<FIXML>...</FIXML>", receivedMessageText, "Second received message doesn't contain expected text");
                     responseMessage = session.createBytesMessage();
                     ((BytesMessage) responseMessage).writeUTF("RESPONSE TO:" + receivedMessageText);
-                    responseMessage.setJMSCorrelationID(requestMessage.getJMSCorrelationID());
                     responseProducer.send(responseMessage);
                 }
                 catch (JMSException | NamingException ex)

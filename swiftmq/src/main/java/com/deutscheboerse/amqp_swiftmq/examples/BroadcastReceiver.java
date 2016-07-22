@@ -69,7 +69,7 @@ public class BroadcastReceiver
              */
             session = connection.createSession(1000, 1000);
             responseConsumer = session.createConsumer(String.format("broadcast.%s.TradeConfirmation", options.getAccountName()),
-                    1000, QoS.AT_LEAST_ONCE, true, "business_date='20160813'");
+                    1000, QoS.AT_LEAST_ONCE, true, null);
         
             /*
              * Step 5: Receiving broadcast messages using listener for timeout seconds

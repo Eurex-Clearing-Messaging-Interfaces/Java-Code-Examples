@@ -78,7 +78,7 @@ public class RequestResponse
                     QoS.AT_LEAST_ONCE);
             String correlationID = UUID.randomUUID().toString();
             responseConsumer = session.createConsumer(String.format("response.%s", options.getAccountName()),
-                    1000, QoS.AT_LEAST_ONCE, true, "\"amqp.correlation_id\"='" + correlationID + "'");
+                    1000, QoS.AT_LEAST_ONCE, true, null);
             
             /*
             * Step 5: Sending a request
@@ -106,9 +106,9 @@ public class RequestResponse
             {
                 LOGGER.info("RECEIVED MESSAGE:");
                 LOGGER.info("#################");
-                LOGGER.info("Correlation ID: {}", receivedMsg.getProperties().getCorrelationId().getValueString());
+                //LOGGER.info("Correlation ID: {}", receivedMsg.getProperties().getCorrelationId().getValueString());
                 //LOGGER.info("Message Text  : {}", new String(receivedMsg.getData().get(0).getValue()));
-                LOGGER.info("#################");
+                //LOGGER.info("#################");
                 receivedMsg.accept();
             }
             else

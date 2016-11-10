@@ -1,14 +1,14 @@
 package com.deutscheboerse.amqp_0_10.examples;
 
-import java.util.Properties;
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * Request Sender
@@ -56,6 +56,9 @@ public class RequestResponse
 
     public void run() throws JMSException, NamingException
     {
+        // Enable use of TLSv1 which is disabled by default since 6.1.0
+        System.setProperty("qpid.security.tls.protocolWhiteList", "TLSv1, TLSv1.1, TLSv1.2");
+
         /*
         * Step 1: Initializing the context based on the properties file we prepared
         */

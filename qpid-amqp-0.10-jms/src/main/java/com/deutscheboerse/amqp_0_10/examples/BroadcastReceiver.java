@@ -1,18 +1,13 @@
 package com.deutscheboerse.amqp_0_10.examples;
 
-import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Properties;
 
 /**
  * Broadcast Receiver
@@ -56,6 +51,9 @@ public class BroadcastReceiver
 
     public void run() throws JMSException, NamingException, InterruptedException
     {
+        // Enable use of TLSv1 which is disabled by default since 6.1.0
+        System.setProperty("qpid.security.tls.protocolWhiteList", "TLSv1, TLSv1.1, TLSv1.2");
+
         /*
         * Step 1: Initializing the context based on the properties file we prepared
         */

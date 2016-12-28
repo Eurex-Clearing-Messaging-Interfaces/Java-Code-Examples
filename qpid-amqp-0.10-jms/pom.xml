@@ -12,13 +12,6 @@
 
   <artifactId>qpid-amqp-0.10-jms</artifactId>
 
-  <repositories>
-    <repository>
-      <id>staging</id>
-      <url>https://repository.apache.org/content/repositories/orgapacheqpid-1095</url>
-    </repository>
-  </repositories>
-
   <packaging>jar</packaging>
   <version>1.0</version>
 

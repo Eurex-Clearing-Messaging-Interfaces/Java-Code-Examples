@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>qpid-amqp-0.10-jms</artifactId>
+
   <packaging>jar</packaging>
   <version>1.0</version>
 

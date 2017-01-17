@@ -26,6 +26,16 @@ public class AutoCloseableConnection implements Connection, AutoCloseable
     }
 
     @Override
+    public Session createSession(int i) throws JMSException {
+        return this.connection.createSession(i);
+    }
+
+    @Override
+    public Session createSession() throws JMSException {
+        return this.connection.createSession();
+    }
+
+    @Override
     public String getClientID() throws JMSException
     {
         return this.connection.getClientID();
@@ -86,5 +96,15 @@ public class AutoCloseableConnection implements Connection, AutoCloseable
     public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String string, String string1, ServerSessionPool ssp, int i) throws JMSException
     {
         return this.connection.createDurableConnectionConsumer(topic, string, string1, ssp, i);
+    }
+
+    @Override
+    public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
+        return this.connection.createSharedDurableConnectionConsumer(topic, s, s1, serverSessionPool, i);
+    }
+
+    @Override
+    public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
+        return this.connection.createSharedConnectionConsumer(topic, s, s1, serverSessionPool, i);
     }
 }

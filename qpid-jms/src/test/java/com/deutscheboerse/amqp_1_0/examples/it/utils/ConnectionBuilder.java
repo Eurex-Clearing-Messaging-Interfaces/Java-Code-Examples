@@ -3,6 +3,7 @@ package com.deutscheboerse.amqp_1_0.examples.it.utils;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.naming.Context;
@@ -132,7 +133,7 @@ public class ConnectionBuilder
 
     }
 
-    public AutoCloseableConnection build() throws NamingException, JMSException
+    public Connection build() throws NamingException, JMSException
     {
         System.out.println(url());
         Properties props = new Properties();
@@ -142,6 +143,6 @@ public class ConnectionBuilder
         InitialContext ctx = new InitialContext(props);
         ConnectionFactory fact = (ConnectionFactory) ctx.lookup("connection");
 
-        return new AutoCloseableConnection(fact.createConnection());
+        return fact.createConnection();
     }
 }

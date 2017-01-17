@@ -1,6 +1,7 @@
 package com.deutscheboerse.amqp_1_0.examples.it.utils;
 
 import java.util.Properties;
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
@@ -9,7 +10,7 @@ import javax.naming.NamingException;
 
 public class Utils
 {
-    public AutoCloseableConnection getAdminConnection(String hostname) throws JMSException, NamingException
+    public Connection getAdminConnection(String hostname) throws JMSException, NamingException
     {
         return new ConnectionBuilder().hostname(hostname).build();
     }

@@ -3,20 +3,13 @@ package com.deutscheboerse.amqp_1_0.examples.it;
 import com.deutscheboerse.amqp_1_0.examples.BroadcastReceiver;
 import com.deutscheboerse.amqp_1_0.examples.RequestResponse;
 import com.deutscheboerse.amqp_1_0.examples.Options;
-import com.deutscheboerse.amqp_1_0.examples.it.utils.AutoCloseableConnection;
 import com.deutscheboerse.amqp_1_0.examples.it.utils.Utils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import javax.naming.NamingException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,7 +31,7 @@ public class BaseIT {
     public void broadcastReceiverIT() throws JMSException, NamingException, InterruptedException
     {
         final String broadcastMessageText = "Broadcast Text";
-        try (AutoCloseableConnection connection = this.brokerUtils.getAdminConnection(BROKER_HOSTNAME))
+        try (Connection connection = this.brokerUtils.getAdminConnection(BROKER_HOSTNAME))
         {
             connection.start();
             Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -80,7 +73,7 @@ public class BaseIT {
             public Boolean call()
             {
                 boolean success = true;
-                try (AutoCloseableConnection connection = BaseIT.this.brokerUtils.getAdminConnection(BROKER_HOSTNAME))
+                try (Connection connection = BaseIT.this.brokerUtils.getAdminConnection(BROKER_HOSTNAME))
                 {
                     connection.start();
                     Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);

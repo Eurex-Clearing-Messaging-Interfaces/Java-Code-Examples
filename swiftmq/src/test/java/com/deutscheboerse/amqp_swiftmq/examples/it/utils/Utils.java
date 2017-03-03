@@ -1,15 +1,16 @@
 package com.deutscheboerse.amqp_swiftmq.examples.it.utils;
 
-import java.util.Properties;
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.Properties;
 
 public class Utils
 {
-    public AutoCloseableConnection getAdminConnection(String hostname) throws JMSException, NamingException
+    public Connection getAdminConnection(String hostname) throws JMSException, NamingException
     {
         return new ConnectionBuilder().hostname(hostname).build();
     }

@@ -10,7 +10,7 @@ test:
   pre:
     - docker run -d -p 35672:5672 -p 35671:5671 ecdb/fixml:sim
   override:
-    - mvn -DrepoToken=${COVERALLS_TOKEN} -P integration-test verify coveralls:report
+    - mvn -P integration-test verify coveralls:report
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;

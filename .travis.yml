@@ -13,7 +13,7 @@ addons:
     - ecag-fixml-dev1
 
 before_install:
-  - docker pull ecmi/fixml:sim
+  - docker pull ecdb/fixml:sim
 
 install:
   - docker run -d -p 35672:5672 -p 35671:5671 ecdb/fixml:sim

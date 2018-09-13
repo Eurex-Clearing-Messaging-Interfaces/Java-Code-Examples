@@ -66,7 +66,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>qpid-amqp-0.10-jms</module>
         <module>qpid-jms</module>
       </modules>
       <properties>
@@ -105,7 +104,6 @@
         </repository>
       </repositories>
       <modules>
-        <module>qpid-amqp-0.10-jms</module>
         <module>qpid-jms</module>
       </modules>
       <properties>

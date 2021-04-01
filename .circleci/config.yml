@@ -1,12 +1,10 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine: true
     steps:
       - checkout
       - run: docker run -d -p 10000:10000 -p 20000:20000 -p 40000:40000 -p 50000:22 --name=fixml vyboant/fixml_test
-
 
 #machine:
 #  hosts:

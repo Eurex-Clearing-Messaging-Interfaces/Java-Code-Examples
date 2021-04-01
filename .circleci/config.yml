@@ -4,7 +4,7 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: docker run -d -p 10000:10000 -p 20000:20000 -p 40000:40000 -p 50000:22 --name=fixml vyboant/fixml_test
+      - run: docker run -dh ecag-fixml-dev1 -p 10000:10000 -p 20000:20000 -p 40000:40000 -p 50000:22 --name=fixml vyboant/fixml_test
       - run: docker exec fixml java -jar /home/oper/sender.jar --host=ecag-fixml-dev1 --port=10000 --keystore-path=/home/oper/ABCFR_ABCFRALMMACC1.keystore --keystore-pass=12345678 --truststore-path=/home/oper/ecag-fixml-dev1.truststore --truststore-pass=12345678 --alias=abcfr_abcfralmmacc1 --node-name=request.ABCFR_ABCFRALMMACC1 --subject=# --ssl-debug=true 
 #machine:
 #  hosts:

@@ -79,8 +79,8 @@ public final class Options
         private String nestedAccountName = "ABCFR_ABCFRALMMACC1";
         private String nestedKeystoreFileName = "ABCFR_ABCFRALMMACC1.keystore";
         private String nestedTruststoreFileName = "truststore.jks";
-        private String nestedKeystorePassword = "123456";
-        private String nestedTruststorePassword = "123456";
+        private String nestedKeystorePassword = "12345678";
+        private String nestedTruststorePassword = "12345678";
         private String nestedCertificateAlias = "abcfr_abcfralmmacc1";
 
         public OptionsBuilder timeoutInMillis(int timeout)

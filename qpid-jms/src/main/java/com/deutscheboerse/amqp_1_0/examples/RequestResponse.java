@@ -184,9 +184,9 @@ public class RequestResponse
                 .hostname("ecag-fixml-simu1.deutsche-boerse.com")
                 .port(10170)
                 .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
-                .keystorePassword("123456")
+                .keystorePassword("12345678")
                 .truststoreFilename("truststore")
-                .truststorePassword("123456")
+                .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .build();
         RequestResponse requestResponse = new RequestResponse(options);

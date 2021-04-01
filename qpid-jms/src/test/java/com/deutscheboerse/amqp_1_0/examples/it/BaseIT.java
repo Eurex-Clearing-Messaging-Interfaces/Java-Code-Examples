@@ -20,7 +20,7 @@ import static org.testng.Assert.assertTrue;
 
 public class BaseIT {
 
-    public static final String BROKER_HOSTNAME = "localhost";
+    public static final String BROKER_HOSTNAME = "ecag-fixml-dev1";
     public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1";
     public static final String RESPONSE_QUEUE = "response.ABCFR_ABCFRALMMACC1";

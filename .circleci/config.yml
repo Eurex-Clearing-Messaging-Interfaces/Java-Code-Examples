@@ -5,9 +5,10 @@ jobs:
     steps:
       - checkout
       - run: docker run -dh ecag-fixml-dev1 -p 35671:10000 -p 35672:20000 -p 40000:40000 -p 50000:22 --name=fixml vyboant/fixml_test
-      - run: sleep 10  
+      - run: hostname -A
+      - run: sleep 10 
 #      - run: docker exec fixml java -jar /home/oper/sender.jar --host=ecag-fixml-dev1 --port=10000 --keystore-path=/home/oper/ABCFR_ABCFRALMMACC1.keystore --keystore-pass=12345678 --truststore-path=/home/oper/ecag-fixml-dev1.truststore --truststore-pass=12345678 --alias=abcfr_abcfralmmacc1 --node-name=request.ABCFR_ABCFRALMMACC1 --subject=# --ssl-debug=true
-      - run: mvn -P integration-test verify
+#      - run: mvn -P integration-test verify
 
 
 
@@ -30,3 +31,4 @@ jobs:
 #    - mkdir -p $CIRCLE_ARTIFACTS/coverage/1.0/
 #    - cp -r qpid-jms/target/site/jacoco/* $CIRCLE_ARTIFACTS/coverage/1.0/
 #
+ 

@@ -11,6 +11,9 @@ jobs:
       - run: hostname
       - run: cat /etc/hostname
       - run: cat /etc/hosts 
+      - run: ping -c 5 ecag-fixml-dev1
+      - run: nc -zv ecag-fixml-dev1 35671
+      - run: nc -zv ecag-fixml-dev1 35672
       - run: mvn -P integration-test verify
 
 

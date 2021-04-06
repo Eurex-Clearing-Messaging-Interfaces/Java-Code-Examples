@@ -9,6 +9,7 @@ jobs:
       - run: sleep 10 
       - run: docker exec fixml java -jar /home/oper/sender.jar --host=ecag-fixml-dev1 --port=10000 --keystore-path=/home/oper/ABCFR_ABCFRALMMACC1.keystore --keystore-pass=12345678 --truststore-path=/home/oper/ecag-fixml-dev1.truststore --truststore-pass=12345678 --alias=abcfr_abcfralmmacc1 --node-name=request.ABCFR_ABCFRALMMACC1 --subject=# --ssl-debug=true
       - run: hostname
+      - run: sed -i 's/127.0.0.1 localhost/127.0.0.1 localhost ecag-fixml-dev1/g' /etc/hosts 
       - run: cat /etc/hostname
       - run: cat /etc/hosts 
       - run: ping -c 5 ecag-fixml-dev1

@@ -51,9 +51,9 @@ public class BaseIT {
                 .hostname(BaseIT.BROKER_HOSTNAME)
                 .port(35671)
                 .keystoreFilename(keystorePath)
-                .keystorePassword("123456")
+                .keystorePassword("12345678")
                 .truststoreFilename(truststorePath)
-                .truststorePassword("123456")
+                .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .build();
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver(options);
@@ -111,9 +111,9 @@ public class BaseIT {
                 .hostname(BaseIT.BROKER_HOSTNAME)
                 .port(35671)
                 .keystoreFilename(keystorePath)
-                .keystorePassword("123456")
+                .keystorePassword("12345678")
                 .truststoreFilename(truststorePath)
-                .truststorePassword("123456")
+                .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .build();
         RequestResponse requestResponse = new RequestResponse(options);

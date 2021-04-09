@@ -68,7 +68,7 @@ public class BroadcastReceiver
              * Step 4: Creating a producer and consumer
              */
             session = connection.createSession(1000, 1000);
-            responseConsumer = session.createConsumer(String.format("broadcast.%s.TradeConfirmation", options.getAccountName()),
+            responseConsumer = session.createConsumer(String.format("broadcast.%s.TradeNotification", options.getAccountName()),
                     1000, QoS.AT_LEAST_ONCE, true, null);
         
             /*

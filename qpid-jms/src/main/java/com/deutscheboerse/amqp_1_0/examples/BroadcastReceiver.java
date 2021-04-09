@@ -45,7 +45,7 @@ public class BroadcastReceiver
                     options.getTruststorePassword(),
                     options.getCertificateAlias()));
             properties.setProperty("queue.broadcastAddress", String.format(
-                    "broadcast.%s.TradeConfirmation",
+                    "broadcast.%s.TradeNotification",
                     options.getAccountName()));
             this.context = new InitialContext(properties);
         }

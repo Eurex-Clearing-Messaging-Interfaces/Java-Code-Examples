@@ -28,11 +28,11 @@ documentation:
 
              Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")
-                .hostname("ecag-fpml-sim1")
+                .hostname("ecag-macal-sim1")
                 .port(35671)
                 .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
                 .keystorePassword("12345678")
-                .truststoreFilename("ecag-fpml-sim1.truststore")
+                .truststoreFilename("ecag-macal-sim1.truststore")
                 .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .build();
@@ -61,7 +61,7 @@ Any running example can be stopped by pressing _Ctrl + C_
 
 # Integration tests
 
-The project is using Circle CI to run its own integration tests. The tests are executed against Docker images which contain the AMQP broker with configuration corresponding to Eurex Clearing FPML Interface. The details of the integration tests can be found in the .circleci/config.yml file.
+The project is using Circle CI to run its own integration tests. The tests are executed against Docker images which contain the AMQP broker with configuration corresponding to Eurex Clearing MACAL Interface. The details of the integration tests can be found in the .circleci/config.yml file.
 
 # Documentation
 

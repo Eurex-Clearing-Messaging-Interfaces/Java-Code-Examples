@@ -4,8 +4,8 @@ jobs:
     machine: true 
     steps:
       - checkout
-      - run: sudo hostnamectl set-hostname ecag-fpml-sim1
-      - run: sudo sed -i 's/127.0.0.1 localhost/127.0.0.1 localhost ecag-fpml-sim1/g' /etc/hosts
-      - run: docker run -dh ecag-fpml-sim1 -p 35671:10000 -p 35672:20000 --name=fpml ecmi/fpml:sim
+      - run: sudo hostnamectl set-hostname ecag-macal-sim1
+      - run: sudo sed -i 's/127.0.0.1 localhost/127.0.0.1 localhost ecag-macal-sim1/g' /etc/hosts
+      - run: docker run -dh ecag-macal-sim1 -p 35671:10000 -p 35672:20000 --name=macal ecmi/mc:sim
       - run: sleep 10 
       - run: mvn -P integration-test verify

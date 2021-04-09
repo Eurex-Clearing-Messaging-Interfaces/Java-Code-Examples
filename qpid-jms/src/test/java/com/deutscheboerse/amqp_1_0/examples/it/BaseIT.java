@@ -20,7 +20,7 @@ import static org.testng.Assert.assertTrue;
 
 public class BaseIT {
 
-    public static final String BROKER_HOSTNAME = "ecag-fixml-sim1";
+    public static final String BROKER_HOSTNAME = "ecag-fpml-sim1";
     public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1.C7";
     public static final String RESPONSE_QUEUE = "response.ABCFR_ABCFRALMMACC1";
@@ -44,7 +44,7 @@ public class BaseIT {
 
         }
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
-        final String truststorePath = BaseIT.class.getResource("ecag-fixml-sim1.truststore").getPath();
+        final String truststorePath = BaseIT.class.getResource("ecag-fpml-sim1.truststore").getPath();
 
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(1000)
@@ -82,7 +82,7 @@ public class BaseIT {
                     Message requestMessage = requestConsumer.receive(10000);
                     assertNotNull(requestMessage, "Didn't receive first request message");
                     String receivedMessageText = ((TextMessage) requestMessage).getText();
-                    assertEquals("<FIXML>...</FIXML>", receivedMessageText, "First received message doesn't contain expected text");
+                    assertEquals("<FPML>...</FPML>", receivedMessageText, "First received message doesn't contain expected text");
                     Message responseMessage = session.createTextMessage("RESPONSE TO:" + receivedMessageText);
                     MessageProducer responseProducer = session.createProducer(BaseIT.this.brokerUtils.getQueue(RESPONSE_QUEUE));
                     responseProducer.send(responseMessage);
@@ -90,7 +90,7 @@ public class BaseIT {
                     requestMessage = requestConsumer.receive(10000);
                     assertNotNull(requestMessage, "Didn't receive second request message");
                     receivedMessageText = ((TextMessage) requestMessage).getText();
-                    assertEquals("<FIXML>...</FIXML>", receivedMessageText, "Second received message doesn't contain expected text");
+                    assertEquals("<FPML>...</FPML>", receivedMessageText, "Second received message doesn't contain expected text");
                     responseMessage = session.createBytesMessage();
                     ((BytesMessage) responseMessage).writeUTF("RESPONSE TO:" + receivedMessageText);
                     responseProducer.send(responseMessage);
@@ -105,7 +105,7 @@ public class BaseIT {
             }
         });
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
-        final String truststorePath = BaseIT.class.getResource("ecag-fixml-sim1.truststore").getPath();
+        final String truststorePath = BaseIT.class.getResource("ecag-fpml-sim1.truststore").getPath();
 
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(10000)

@@ -84,7 +84,7 @@ public class RequestResponse
             * Step 5: Sending a request
             */
             AMQPMessage msg = new AMQPMessage();
-            msg.setAmqpValue(new AmqpValue(new AMQPString("<FIXML>...</FIXML>")));
+            msg.setAmqpValue(new AmqpValue(new AMQPString("<FPML>...</FPML>")));
             Properties msgProp = new Properties();
             msgProp.setReplyTo(new AddressString(String.format("response/response.%s", options.getAccountName())));
             msgProp.setCorrelationId(new MessageIdString(correlationID));
@@ -152,11 +152,11 @@ public class RequestResponse
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(10000)
                 .accountName("ABCFR_ABCFRALMMACC1")
-                .hostname("ecag-fixml-sim1")
+                .hostname("ecag-fpml-sim1")
                 .port(35671)
                 .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
                 .keystorePassword("12345678")
-                .truststoreFilename("ecag-fixml-sim1.truststore")
+                .truststoreFilename("ecag-fpml-sim1.truststore")
                 .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .build();

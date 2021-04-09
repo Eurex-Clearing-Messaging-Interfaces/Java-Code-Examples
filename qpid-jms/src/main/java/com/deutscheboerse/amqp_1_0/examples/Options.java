@@ -74,11 +74,11 @@ public final class Options
     public static class OptionsBuilder
     {
         private int nestedTimeoutInMillis = 100000;
-        private String nestedHostname = "ecag-fixml-sim1";
+        private String nestedHostname = "ecag-fpml-sim1";
         private int nestedPort = 35671;
         private String nestedAccountName = "ABCFR_ABCFRALMMACC1";
         private String nestedKeystoreFileName = "ABCFR_ABCFRALMMACC1.keystore";
-        private String nestedTruststoreFileName = "ecag-fixml-sim1.truststore";
+        private String nestedTruststoreFileName = "ecag-fpml-sim1.truststore";
         private String nestedKeystorePassword = "12345678";
         private String nestedTruststorePassword = "12345678";
         private String nestedCertificateAlias = "abcfr_abcfralmmacc1";

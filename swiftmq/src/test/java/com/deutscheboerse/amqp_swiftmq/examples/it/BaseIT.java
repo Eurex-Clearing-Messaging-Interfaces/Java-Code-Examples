@@ -20,47 +20,10 @@ import static org.testng.Assert.*;
 public class BaseIT {
 
     public static final String BROKER_HOSTNAME = "ecag-macal-sim1";
-    public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1";
     public static final String RESPONSE_QUEUE = "response.ABCFR_ABCFRALMMACC1";
 
     protected Utils brokerUtils = new Utils();
-
-    @Test
-    public void broadcastReceiverIT() throws JMSException, NamingException, InterruptedException, AMQPException, IOException, UnsupportedProtocolVersionException, AuthenticationException {
-        final String broadcastMessageText = "Broadcast Text";
-        try (Connection connection = this.brokerUtils.getAdminConnection(BROKER_HOSTNAME))
-        {
-            connection.start();
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            MessageProducer broadcastProducer = session.createProducer(this.brokerUtils.getQueue(BROADCAST_QUEUE));
-            Message textMessage = session.createTextMessage(broadcastMessageText);
-            broadcastProducer.send(textMessage);
-            BytesMessage bytesMessage = session.createBytesMessage();
-            bytesMessage.setStringProperty("business_date", "20160813");
-            bytesMessage.writeUTF(broadcastMessageText);
-            broadcastProducer.send(bytesMessage);
-
-        }
-        final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
-        final String truststorePath = BaseIT.class.getResource("ecag-macal-sim1.truststore").getPath();
-
-        Options options = new Options.OptionsBuilder()
-                .timeoutInMillis(10000)
-                .accountName("ABCFR_ABCFRALMMACC1")
-                .hostname(BaseIT.BROKER_HOSTNAME)
-                .port(35671)
-                .keystoreFilename(keystorePath)
-                .keystorePassword("12345678")
-                .truststoreFilename(truststorePath)
-                .truststorePassword("12345678")
-                .certificateAlias("abcfr_abcfralmmacc1")
-                .build();
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver(options);
-        broadcastReceiver.run();
-        Assert.assertEquals(broadcastReceiver.getMessagesReceivedCount(), 2, "Invalid broadcast messages received");
-        Assert.assertFalse(broadcastReceiver.isExceptionReceived(), "Exception while receiving broadcast");
-    }
 
     @Test
     public void requestResponseIT() throws InterruptedException, JMSException, NamingException, ExecutionException, UnsupportedProtocolVersionException, AMQPException, AuthenticationException, IOException {

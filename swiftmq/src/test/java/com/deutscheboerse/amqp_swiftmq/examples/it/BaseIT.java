@@ -19,7 +19,7 @@ import static org.testng.Assert.*;
 
 public class BaseIT {
 
-    public static final String BROKER_HOSTNAME = "ecag-fixml-dev1";
+    public static final String BROKER_HOSTNAME = "ecag-fixml-sim1";
     public static final String BROADCAST_QUEUE = "broadcast.ABCFR_ABCFRALMMACC1.TradeConfirmation";
     public static final String REQUEST_QUEUE = "request_be.ABCFR_ABCFRALMMACC1";
     public static final String RESPONSE_QUEUE = "response.ABCFR_ABCFRALMMACC1";
@@ -43,7 +43,7 @@ public class BaseIT {
 
         }
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
-        final String truststorePath = BaseIT.class.getResource("ecag-fixml-dev1.truststore").getPath();
+        final String truststorePath = BaseIT.class.getResource("ecag-fixml-sim1.truststore").getPath();
 
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(10000)
@@ -103,7 +103,7 @@ public class BaseIT {
             }
         });
         final String keystorePath = BaseIT.class.getResource("ABCFR_ABCFRALMMACC1.keystore").getPath();
-        final String truststorePath = BaseIT.class.getResource("ecag-fixml-dev1.truststore").getPath();
+        final String truststorePath = BaseIT.class.getResource("ecag-fixml-sim1.truststore").getPath();
 
         Options options = new Options.OptionsBuilder()
                 .timeoutInMillis(10000)

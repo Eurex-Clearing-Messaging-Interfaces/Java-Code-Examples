@@ -181,11 +181,11 @@ public class RequestResponse
     {
         Options options = new Options.OptionsBuilder()
                 .accountName("ABCFR_ABCFRALMMACC1")
-                .hostname("ecag-fixml-dev1")
+                .hostname("ecag-fixml-sim1")
                 .port(35671)
                 .keystoreFilename("ABCFR_ABCFRALMMACC1.keystore")
                 .keystorePassword("12345678")
-                .truststoreFilename("ecag-fixml-dev1.truststore")
+                .truststoreFilename("ecag-fixml-sim1.truststore")
                 .truststorePassword("12345678")
                 .certificateAlias("abcfr_abcfralmmacc1")
                 .timeoutInMillis(10000)

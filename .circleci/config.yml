@@ -4,8 +4,8 @@ jobs:
     machine: true 
     steps:
       - checkout
-      - run: sudo hostnamectl set-hostname ecag-fixml-dev1
-      - run: sudo sed -i 's/127.0.0.1 localhost/127.0.0.1 localhost ecag-fixml-dev1/g' /etc/hosts 
-      - run: docker run -dh ecag-fixml-dev1 -p 35671:10000 -p 35672:20000 --name=fixml ecmi/fixml:dev
+      - run: sudo hostnamectl set-hostname ecag-fixml-sim1
+      - run: sudo sed -i 's/127.0.0.1 localhost/127.0.0.1 localhost ecag-fixml-sim1/g' /etc/hosts
+      - run: docker run -dh ecag-fixml-sim1 -p 35671:10000 -p 35672:20000 --name=fixml ecmi/fixml:dev
       - run: sleep 10 
       - run: mvn -P integration-test verify
